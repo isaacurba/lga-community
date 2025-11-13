@@ -2,23 +2,20 @@
 logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
-*.local
 
-# Editor directories and files
+# Editor/OS files
 .vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+
+# Frontend build files (KEEP THESE)
+/frontend/dist
+/frontend/node_modules
+
+# Backend specific files
+/backend/node_modules
