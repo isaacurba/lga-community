@@ -13,9 +13,9 @@ export const ProtectedRoute = ({ children }) => {
     );
   }
 
-  // if (!user || !isStaff) {
-  //   return <Navigate to="/login" replace />;
-  // }
+  if (!user || !isStaff) {
+    return <Navigate to="/login" replace />;
+  }
 
   return <>{children}</>;
 };

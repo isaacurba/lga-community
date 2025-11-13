@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+// import { Button } from '@/components/ui/button';
+// import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Search, UserPlus, Shield } from 'lucide-react';
 
@@ -31,33 +30,14 @@ export default function StaffPortal() {
     }
 
     setIsSearching(true);
-    try {
-      const { data, error } = await supabase
-        .from('citizens')
-        .select('*')
-        .or(`nin_id.eq.${searchQuery},last_name.ilike.%${searchQuery}%`)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setSearchResults(data || []);
-      setSelectedCitizen(null);
-
-      if (!data || data.length === 0) {
-        toast({
-          title: 'No Results',
-          description: 'No citizens found matching your search.',
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Search Failed',
-        description: error.message || 'An error occurred during search.',
-      });
-    } finally {
-      setIsSearching(false);
-    }
+    // TODO: Implement search with your MongoDB backend
+    toast({
+      title: 'Search',
+      description: 'Search functionality to be implemented with MongoDB backend.',
+    });
+    setSearchResults([]);
+    setSelectedCitizen(null);
+    setIsSearching(false);
   };
 
   return (

@@ -1,6 +1,4 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PropTypes from 'prop-types';
 
@@ -8,96 +6,35 @@ const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isStaff, setIsStaff] = useState(false);
   const { toast } = useToast();
 
-  const checkUserRole = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .in('role', ['staff', 'admin']);
-
-      if (error) throw error;
-      setIsStaff(data && data.length > 0);
-    } catch (error) {
-      console.error('Error checking user role:', error);
-      setIsStaff(false);
-    }
-  };
-
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          setTimeout(() => {
-            checkUserRole(session.user.id);
-          }, 0);
-        } else {
-          setIsStaff(false);
-        }
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkUserRole(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    // TODO: Implement auth state management with your MongoDB backend
+    setLoading(false);
   }, []);
 
   const signIn = async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    // TODO: Implement sign in with your MongoDB backend
+    toast({
+      title: 'Login',
+      description: 'Sign in functionality to be implemented with MongoDB backend.',
     });
-
-    if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: error.message,
-      });
-    }
-
-    return { error };
+    return { error: null };
   };
 
   const signUp = async (email, password) => {
-    const redirectUrl = `${window.location.origin}/`;
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-      },
+    // TODO: Implement sign up with your MongoDB backend
+    toast({
+      title: 'Signup',
+      description: 'Sign up functionality to be implemented with MongoDB backend.',
     });
-
-    if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Signup Failed',
-        description: error.message,
-      });
-    }
-
-    return { error };
+    return { error: null };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    setUser(null);
     setIsStaff(false);
     toast({
       title: 'Signed Out',
@@ -106,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isStaff, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, isStaff, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
