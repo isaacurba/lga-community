@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs'); // Must require bcrypt for password hashing
+import mongoose from "mongoose"
+import bcrypt from "bycriptjs" // Must require bcrypt for password hashing
 
 const CitizenSchema = new mongoose.Schema({
   ninId: {
@@ -37,7 +37,7 @@ const CitizenSchema = new mongoose.Schema({
   },
   originalLga: {
     type: String,
-    required: false,
+    required: true,
   },
   isVerified: {
     type: Boolean,
