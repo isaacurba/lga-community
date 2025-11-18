@@ -1,0 +1,110 @@
+[33mcommit 4662ba831f5f7e7845e9daca37b77acde268e163[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Tue Nov 18 11:11:28 2025 +0100
+
+    Remove sensitive .env file
+
+[33mcommit 7598bf68b2041c5288a610bb8b0e91da585c5d43[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Tue Nov 18 11:09:41 2025 +0100
+
+    fixed env bug
+
+[33mcommit 6318c3533f7f28368d9638d24c36426ebacff037[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Tue Nov 18 11:07:50 2025 +0100
+
+    added .env
+
+[33mcommit 4c497f154ad844e72045cf7dd182bc546d5eac96[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Tue Nov 18 11:04:25 2025 +0100
+
+    fixed bugs
+
+[33mcommit a7a216d98da6d813e4d20139d7aa6b86dc992c85[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Tue Nov 18 11:00:50 2025 +0100
+
+    changed from brevo to sendgris SMTP
+
+[33mcommit cd3bfd9ce147ac77485798d0a235bc29e8ad1a39[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Sun Nov 16 00:48:15 2025 +0100
+
+    added nodemail auth
+
+[33mcommit 3f1a1f03a05c75f6b8b03504a91d3a6f85f22a97[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Sat Nov 15 23:22:30 2025 +0100
+
+    fixed process mispelling in files
+
+[33mcommit a16b7008485b0023e680d1bf2bb8bb8ec170cdd3[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Sat Nov 15 22:24:56 2025 +0100
+
+    added citizens.js file
+
+[33mcommit 22fb8814a1ae1187da970577a3e38d371e60db3b[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Fri Nov 14 15:51:01 2025 +0100
+
+    fixed bug
+
+[33mcommit 9126335e5fd0ec6aef6e3d78a54360d43f7e0a2f[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Fri Nov 14 12:18:34 2025 +0100
+
+    donr with mern-auth for backend
+
+[33mcommit 5902ff8184ebaad2a299cc7d7dbd5671f07860cd[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Fri Nov 14 01:03:48 2025 +0100
+
+    added user controller file and register function
+
+[33mcommit a65160995a2edc9f06fb6949e85bcea7a0748e48[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Thu Nov 13 14:55:50 2025 +0100
+
+    removed txs files
+
+[33mcommit 759a0e66103d26561de7b33819c465376f74eb65[m
+Merge: 1e33d4e 57c4e8a
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Thu Nov 13 13:35:01 2025 +0100
+
+    Merge branch 'master' into 'main' with resolved .gitignore conflict
+
+[33mcommit 57c4e8a9fe474be8b10d21e9cef814771931d86f[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Thu Nov 13 01:12:28 2025 +0100
+
+    fixed bugs
+
+[33mcommit 6014e159b81d13e2d6703a26bb8ec4f9d5e8b10c[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Thu Nov 13 00:30:23 2025 +0100
+
+    changed project to react
+
+[33mcommit 8a2303dab74c101d40f97b305463919c92f095d0[m
+Author: isaacurba <kpomassiurban@gmail.com>
+Date:   Wed Nov 12 21:13:38 2025 +0100
+
+    Initial commit of MERN structure and Lovable frontend
+
+[33mcommit 1e33d4e28d00b7a6d1c2473dd7f9167c78673978[m
+Author: gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com>
+Date:   Tue Nov 11 19:34:16 2025 +0000
+
+    Connect to Lovable Cloud
+    
+    Set up Supabase backend for authentication and database access, enabling the LGA-Connect MVP on Lovable Cloud. Implement initial migrations for citizens and roles, apply RLS policies, and scaffold frontend authentication and staff portal components to work with the new backend. Highlighted focus on cloud-backed auth and protected citizen data workflows.
+
+[33mcommit c08b84996482c7eb40af3fed999009f01e9a383b[m
+Author: gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com>
+Date:   Tue Nov 11 19:25:50 2025 +0000
+
+    [skip lovable] Use tech stack vite_react_shadcn_ts_20250728_minor
