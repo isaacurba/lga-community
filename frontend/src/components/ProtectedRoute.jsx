@@ -2,8 +2,8 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import PropTypes from 'prop-types';
 
-export const ProtectedRoute = ({ children }) => {
-  const { user, isStaff, loading } = useAuth();
+export const ProtectedRoute = ({ children, requiredRole = 'staff' }) => {
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -13,8 +13,16 @@ export const ProtectedRoute = ({ children }) => {
     );
   }
 
-  if (!user || !isStaff) {
+  if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requiredRole === 'staff' && (user.role !== 'staff' && user.role !== 'admin')) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (requiredRole === 'citizen' && user.role !== 'citizen') {
+    return <Navigate to="/citizen/login" replace />;
   }
 
   return <>{children}</>;
@@ -22,4 +30,5 @@ export const ProtectedRoute = ({ children }) => {
 
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
+  requiredRole: PropTypes.string,
 };
