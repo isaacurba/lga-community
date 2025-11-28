@@ -1,19 +1,19 @@
 import express from "express";
-import {
-  login,
-  logOut,
-  register,
-  sendVerifyOtp,
-  verifyEmail,
-} from "../controllers/authController.js";
-import userAuth from "../middleware/userauth.js";
+import { register, login, logOut, sendVerifyOtp, verifyEmail } from "../controllers/authController.js";
+import userAuth from "../middleware/userAuth.js";
+// Import citizen controllers
+import { citizenLogin, registerCitizen } from "../controllers/citizenController.js";
 
 const authRouter = express.Router();
 
-// @route   POST /api/v1/auth/login
 authRouter.post("/register", register);
 authRouter.post("/login", login);
-authRouter.post("/logOut", logOut);
-authRouter.post("/verify-email", userAuth, sendVerifyOtp);
-authRouter.post("/send-verify-otp", userAuth, verifyEmail);
+authRouter.post("/logout", logOut);
+authRouter.post("/send-verify-otp", userAuth, sendVerifyOtp);
+authRouter.post("/verify-account", userAuth, verifyEmail);
+
+// Add citizen routes as specified
+authRouter.post("/citizen/login", citizenLogin);
+authRouter.post("/staff/register-citizen", registerCitizen);
+
 export default authRouter;
