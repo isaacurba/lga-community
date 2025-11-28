@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
+import Citizen from "../models/citizen.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -16,11 +17,10 @@ export const register = async (req, res) => {
     if (existingUser) {
       return res.json({ success: false, message: "User already exists" });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new userModel({
       name,
       email,
-      password: hashedPassword,
+      password,
     });
     await user.save();
 
@@ -72,7 +72,6 @@ export const login = async (req, res) => {
     if (!user)
       return res.json({ success: false, message: "Invalid Email or Password" });
 
-    // FIX: Corrected typo from bcript.compare to bcrypt.compare
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch)
@@ -109,6 +108,141 @@ export const login = async (req, res) => {
   }
 };
 
+export const citizenLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.json({
+      success: false,
+      message: "Email and Password are required",
+    });
+  }
+
+  try {
+    const citizen = await Citizen.findOne({ email }).select("+password");
+
+    if (!citizen) {
+      return res.json({ success: false, message: "Invalid Email or Password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, citizen.password);
+
+    if (!isMatch) {
+      return res.json({ success: false, message: "Invalid Email or Password" });
+    }
+
+    if (!citizen.is_active) {
+      return res.json({ success: false, message: "Account is not active" });
+    }
+
+    const token = jwt.sign(
+      { id: citizen._id, role: "citizen" },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    const citizenResponse = {
+      id: citizen._id,
+      email: citizen.email,
+      firstName: citizen.firstName,
+      lastName: citizen.lastName,
+      role: "citizen",
+    };
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({ success: true, token, user: citizenResponse });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+export const registerCitizen = async (req, res) => {
+  const {
+    ninId,
+    email,
+    password,
+    firstName,
+    lastName,
+    dob,
+    currentAddress,
+    originalLga,
+  } = req.body;
+
+  if (
+    !ninId ||
+    !email ||
+    !password ||
+    !firstName ||
+    !lastName ||
+    !originalLga
+  ) {
+    return res.json({ success: false, message: "Missing required details" });
+  }
+
+  try {
+    // Check if staff/admin
+    const staffId = req.body.userid;
+    const staff = await userModel.findById(staffId);
+    if (!staff || (staff.role !== "staff" && staff.role !== "admin")) {
+      return res.json({ success: false, message: "Unauthorized" });
+    }
+
+    const existingCitizen = await Citizen.findOne({
+      $or: [{ email }, { ninId }],
+    });
+    if (existingCitizen) {
+      return res.json({
+        success: false,
+        message: "Citizen with this email or NIN already exists",
+      });
+    }
+
+    const citizen = new Citizen({
+      ninId,
+      email,
+      password,
+      firstName,
+      lastName,
+      dob,
+      currentAddress,
+      originalLga,
+    });
+
+    await citizen.save();
+
+    // Send welcome email
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: citizen.email,
+      subject: "Welcome to LGA-Community",
+      text: `Welcome ${citizen.firstName} ${citizen.lastName} to LGA-Community. Your account has been created with email: ${citizen.email} and password: ${password}. Please log in and change your password.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.json({
+      success: true,
+      message: "Citizen registered successfully",
+      citizen: {
+        id: citizen._id,
+        email: citizen.email,
+        firstName: citizen.firstName,
+        lastName: citizen.lastName,
+      },
+    });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
 export const logOut = async (req, res) => {
   try {
     res.clearCookie("token", {
@@ -126,7 +260,7 @@ export const logOut = async (req, res) => {
 // send verification OTP to user email
 export const sendVerifyOtp = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.userId;
     const user = await userModel.findById(userId);
 
     if (user.isAccountVerified) {
@@ -142,8 +276,8 @@ export const sendVerifyOtp = async (req, res) => {
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: user.email,
-      subject: "Accoiunt Verification OTP",
-      text: `Your  OTP is ${otp}. Verify your account using this OTP.`,
+      subject: "Account Verification OTP",
+      text: `Your OTP is ${otp}. Verify your account using this OTP.`,
     };
     await transporter.sendMail(mailOptions);
     return res.json({
@@ -156,20 +290,21 @@ export const sendVerifyOtp = async (req, res) => {
 };
 
 export const verifyEmail = async (req, res) => {
-  const { userid, otp } = req.body;
-  if (!userid || !otp) {
-    res.json({ success: false, message: "Missing Details" });
+  const { otp } = req.body;
+  const userId = req.userId;
+  if (!userId || !otp) {
+    return res.json({ success: false, message: "Missing Details" });
   }
   try {
     const user = await userModel.findById(userId);
     if (!user) {
-      res.json({ success: false, message: "User not found" });
+      return res.json({ success: false, message: "User not found" });
     }
     if (user.verifyOtp === "" || user.verifyOtp !== otp) {
-      res.json({ success: false, message: "Invalid otp" });
+      return res.json({ success: false, message: "Invalid otp" });
     }
     if (user.verifyOtpExpireAt < Date.now()) {
-      res.json({ success: false, message: "OTP Expired" });
+      return res.json({ success: false, message: "OTP Expired" });
     }
     user.isAccountVerified = true;
     user.verifyOtp = "";
@@ -177,8 +312,8 @@ export const verifyEmail = async (req, res) => {
 
     await user.save();
 
-    return res.json({success: true, message: "Email Verified Successfully"})
+    return res.json({ success: true, message: "Email Verified Successfully" });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
