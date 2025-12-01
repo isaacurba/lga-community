@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import userModel from "../models/userModel.js";
+import userModel from "../models/staffModel.js";
 import Citizen from "../models/citizen.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
@@ -378,7 +378,7 @@ export const resetPassword = async (req, res) => {
     if (user.resetOtpExpireAt < Date.now()) {
       return res.json({ success: false, message: "OTP Expired" });
     }
-    const salt = await bcrypt.hash(10);
+    const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     user.password = hashedPassword;
     user.resetOtp = "";

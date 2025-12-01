@@ -1,39 +1,37 @@
-import mongoose from "mongoose"
-import bcrypt from "bycriptjs" // Must require bcrypt for password hashing
+// Fix: Correct the bcrypt import typo
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs"; // Fixed typo: was "bycriptjs"
 
-const CitizenSchema = new mongoose.Schema({
+const citizenSchema = new mongoose.Schema({
   ninId: {
     type: String,
-    required: [true, 'NIN ID is required.'],
+    required: true,
     unique: true,
-    minlength: 11,
-    maxlength: 11,
-    trim: true,
   },
-  // We add a password field so the citizen can log in later
-  password: { 
+  email: {
     type: String,
-    required: [true, 'Password is required for portal access.'],
-    minlength: 6,
-    select: false, // Prevents password from being returned in query results
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false,
   },
   firstName: {
     type: String,
-    required: [true, 'First name is required.'],
-    trim: true,
+    required: true,
   },
   lastName: {
     type: String,
-    required: [true, 'Last name is required.'],
-    trim: true,
+    required: true,
   },
   dob: {
     type: Date,
-    required: false,
+    required: true,
   },
   currentAddress: {
     type: String,
-    required: false,
   },
   originalLga: {
     type: String,
@@ -43,24 +41,30 @@ const CitizenSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-}, { 
-  timestamps: true
-});
+  verificationOtp: {
+    type: String,
+    select: false,
+  },
+  otpExpires: {
+    type: Date,
+    select: false,
+  },
+}, { timestamps: true });
 
-// Middleware to hash password before saving (PRE-SAVE HOOK)
-CitizenSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    return next();
+citizenSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
   }
-  const salt = await bcrypt.genSalt(10);
+
+  const salt = await bcrypt.hash(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
-// Method to compare password for Citizen Login
-CitizenSchema.methods.comparePassword = async function (enteredPassword) {
+citizenSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const Citizen = mongoose.model('Citizen', CitizenSchema);
-module.exports = Citizen;
+const Citizen = mongoose.model("Citizen", citizenSchema);
+
+// Fix: Use ES Module export syntax
+export default Citizen;

@@ -1,3 +1,8 @@
+// FIX: Add missing imports for the components used below
+import { TooltipProvider } from "@/components/ui/tooltip"; 
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SonnerToaster } from "sonner"; // Sonner is a 3rd party package, using an alias
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -10,12 +15,15 @@ import CitizenLogin from "./pages/CitizenLogin";
 import CitizenPanel from "./pages/CitizenPanel";
 import NotFound from "./pages/NotFound";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <BrowserRouter>
+    {/* FIX: Wrap the application with the TooltipProvider */}
+    <TooltipProvider> 
+      <AuthProvider>
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
@@ -47,7 +55,11 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-    </AuthProvider>
+        {/* FIX: Render both Toaster components for shadcn/sonner to work */}
+        <Toaster />
+        <SonnerToaster /> 
+      </AuthProvider>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 
