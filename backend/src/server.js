@@ -4,13 +4,14 @@ import cors from "cors";
 import connectedDB from "./config/db.js";
 import authRouter from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
+import staffRouter from "./routes/staffRoutes.js";
+
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Fix: Set explicit CORS origin to allow cookies
 app.use(
   cors({
     origin: "http://localhost:8080",
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/staff/auth", authRouter);
+app.use("/api/staff", staffRouter);
 
 app.listen(PORT, () => {
   connectedDB().then(() => {

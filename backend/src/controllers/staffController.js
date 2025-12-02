@@ -1,8 +1,12 @@
-import staffModel from "../models/staffModel";
+import staffModel from "../models/staffModel.js";
 
 export const getStaffData = async (req, res)=>{
     try {
-        const {userId} = req.body
+        // userAuth middleware sets req.userId from token, prefer it for authenticated routes
+        const userId = req.userId || req.body?.userId; // prefer authenticated userId from token, allow fallback from body for testing
+        if (!userId) {
+            return res.json({ success: false, message: "Missing userId" });
+        }
         const user = await staffModel.findById(userId)
 
         if(!user){
