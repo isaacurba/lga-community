@@ -270,5 +270,6 @@ This is an automated message from LGA-Connect Portal.
   }
 };
 
+
 // FIX: Export missing functions to match imports in routes file
 export const citizenFunctions = { citizenLogin, registerCitizen };
