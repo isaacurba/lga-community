@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import citizenModel from "../models/citizenModel.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
+import Citizen from "../models/citizenModel.js";
 dotenv.config();
 
 // Helper function to handle cookie and token response
@@ -279,19 +280,27 @@ This is an automated message from LGA-Connect Portal.
   }
 };
 
-// @desc    Citizen rest otp
+// @desc    Citizen reset otp
 // @route   POST /api/staff/auth/citizen/send-reset-otp
-export const sendResetOtp = async (req, res) => {
+export const citizenResetOtp = async (req, res) => {
   const { email } = req.body;
   if (!email) {
     return res.json({ success: false, message: "Email is Required" });
   }
   try {
-    const user = await citizenModel.findOne({ email });
+    const user = await citizenModel
+      .findOne({ email })
+      .select("+sendResetOtp +resetOtpExpireAt");
     if (!user) {
       return res.json({ success: false, message: "Citizen is not registered" });
     }
     const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+    user.sendResetOtp = otp;
+    user.resetOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
+    user.isAccountVerified = true;
+
+    await user.save();
 
     // Professional HTML email template for password reset
     const htmlContent = `
@@ -321,7 +330,7 @@ export const sendResetOtp = async (req, res) => {
                     <h2 style="margin: 0 0 20px 0; color: #333333; font-size: 24px;">Password Reset Request</h2>
                     
                     <p style="margin: 0 0 20px 0; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Dear ${user.name},
+                      Dear ${user.firstName},
                     </p>
                     
                     <p style="margin: 0 0 30px 0; color: #666666; font-size: 16px; line-height: 1.6;">
@@ -424,14 +433,51 @@ This is an automated message from LGA-Connect Portal.
     });
   } catch (error) {
     res.json({
-      success: false, message: error.message
-    })
+      success: false,
+      message: error.message,
+    });
   }
 };
 
+// @desc    Citizen reset password
+// @route   POST /api/staff/auth/citizen/reset-password
+export const citizenResetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  if (!email || !otp || !newPassword) {
+    return res.json({
+      success: false,
+      message: "Email, OTP and new Password is Required",
+    });
+  }
+  try {
+    const user = await citizenModel.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+    if (user.sendResetOtp === "" || user.sendResetOtp !== otp) {
+      return res.json({ success: false, message: "Invalid otp" });
+    }
+    if (user.resetOtpExpireAt < Date.now()) {
+      return res.json({ success: false, message: "OTP Expired" });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    user.sendResetOtp = "";
+    user.resetOtpExpireAt = 0;
 
+    await user.save();
 
-
+    return res.json({ success: true, message: "Password Reset Successfully" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
 
 // FIX: Export missing functions to match imports in routes file
-export const citizenFunctions = { registerCitizen, citizenLogin, sendResetOtp  };
+export const citizenFunctions = {
+  registerCitizen,
+  citizenLogin,
+  citizenResetOtp,
+  citizenResetPassword,
+};

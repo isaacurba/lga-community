@@ -1,6 +1,5 @@
-// Fix: Correct the bcrypt import typo
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs"; // Fixed typo: was "bycriptjs"
+import bcrypt from "bcryptjs"; 
 
 const citizenSchema = new mongoose.Schema(
   {
@@ -42,11 +41,11 @@ const citizenSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    verifyOtpExpireAt: {
+    sendResetOtp: {
       type: String,
-      select: false,
+      default: "",
     },
-    otpExpires: {
+    resetOtpExpireAt: {
       type: Date,
       select: false,
     },

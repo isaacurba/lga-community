@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "../models/staffModel.js";
-import Citizen from "../models/citizenModel.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -550,7 +549,7 @@ This is an automated message from LGA-Connect Portal.
         address: process.env.SENDER_EMAIL,
       },
       to: user.email,
-      subject: "🔒 Password Reset Request - LGA-Connect",
+      subject: "Password Reset Request - LGA-Connect",
       text: textContent,
       html: htmlContent,
       priority: "high",
