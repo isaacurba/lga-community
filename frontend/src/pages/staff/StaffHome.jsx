@@ -1,13 +1,11 @@
-import Navbar from '@/components/Navbar'
-import React from 'react'
+import Navbar from '@/components/Navbar';
+import Header from "@/components/Header"
 
 const StaffHome = () => {
   return (
     <div>
           <Navbar/>
-      <h1 className='text-amber-500'>
-          Home Page
-      </h1>
+          <Header/>
     </div>
 
     

@@ -10,7 +10,7 @@ function App() {
       <div>
         <Routes>
           <Route path='/' element={<StaffHome/>}/>
-          <Route path='/staff-login' element={<StaffLogin/>}/>
+          <Route path='/login' element={<StaffLogin/>}/>
           <Route path='/verify-email' element={<EmailVerify/>}/>
           <Route path='/staff-reset-password' element={<StaffResetPassword/>}/>
           
