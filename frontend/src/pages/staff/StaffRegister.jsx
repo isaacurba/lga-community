@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,12 +12,32 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import {  Mail, Lock, Shield, User } from "lucide-react";
+import { AppContext } from "@/context/AppContext";
+import axios from "axios"
+import { toast } from "sonner";
 const StaffRegister = () => {
-
+  const navigate = useNavigate();
   const [ name, setName ] = useState("")
   const [ email, setEmail ] = useState("")
   const [ password, setPassword ] = useState("")
+  const {backendUrl, setIsLoggedIn} = useContext(AppContext);
 
+  const onHandleSubmit =async (e) =>{
+    try {
+      e.preventDefault();
+      axios.defaults.withCredentials = true;
+      const {data} = await axios.post(backendUrl + "/api/auth/register", {name, email, password})
+      if(data.success){
+        setIsLoggedIn(true);
+        toast.success("Registration successful")
+        navigate("/staff/dashboard")
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+      toast.error(errorMessage);
+    }
+      
+  }
 
   return (
     <div className=" flex items-center justify-center bg-muted/20 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -26,7 +47,6 @@ const StaffRegister = () => {
         <div className="absolute bottom-8 right-8 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Login Card */}
       <Card className="w-full max-w-md shadow-xl border-t-4 border-t-primary">
         <CardHeader className="text-center">
           <div className="flex justify-center">
@@ -47,7 +67,9 @@ const StaffRegister = () => {
 
         {/* Form */}
         <CardContent>
-          <form className="space-y-2">
+          <form 
+          onSubmit={onHandleSubmit}
+          className="space-y-2">
 
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="name">
