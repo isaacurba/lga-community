@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -7,13 +7,35 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import {  Mail, Lock, Shield } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AppContext } from "@/context/AppContext";
+import axios from "axios";
+import {toast} from "sonner"
+
 const StaffLogin = () => {
+  const navigate = useNavigate()
+
   const [ email, setEmail ] = useState("")
   const [ password, setPassword ] = useState("")
+  const { backendUrl, setIsLoggedIn } = useContext(AppContext) 
+
+  const onHandleSubmit = async (e)=>{
+    try {
+      e.preventDefault();
+      axios.defaults.withCredentials = true;
+      const {data} = await axios.post(backendUrl + "/api/auth/login", {email, password});
+      if(data.success){
+        setIsLoggedIn(true);
+        toast.success("Login Successfull")
+        navigate("/staff/dashboard")
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "An unexpected error occurred"
+      toast.error(errorMessage)
+    }
+  }
 
   return (
     <div className=" flex items-center justify-center bg-muted/20 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -25,8 +47,6 @@ const StaffLogin = () => {
 
       {/* Login Card */}
       <Card className="w-full max-w-md shadow-xl border-t-4 border-t-primary">
-        
-        {/* Header Section */}
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
             <div className="bg-primary/10 p-4 rounded-2xl ring-1 ring-primary/20">
@@ -46,9 +66,10 @@ const StaffLogin = () => {
 
         {/* Form */}
         <CardContent className="pt-6">
-          <form className="space-y-5">
+          <form
+          onSubmit={onHandleSubmit} 
+          className="space-y-5">
 
-            {/* Login State */}
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="email">
                 Email Address
@@ -84,7 +105,7 @@ const StaffLogin = () => {
               </div>
             </div>
 
-            <Button variant="default" className="w-full h-11 text-base shadow-sm mt-2 bg-primary text-primary-foreground">
+            <Button  variant="default" className="w-full h-11 text-base shadow-sm mt-2 bg-primary text-primary-foreground">
               Login
             </Button>
 
