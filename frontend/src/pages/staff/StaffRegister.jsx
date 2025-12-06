@@ -33,7 +33,7 @@ const StaffRegister = () => {
         navigate("/staff/dashboard")
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+      const errorMessage = error.response?.data?.message;
       toast.error(errorMessage);
     }
       

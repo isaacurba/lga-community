@@ -19,7 +19,7 @@ const StaffLogin = () => {
 
   const [ email, setEmail ] = useState("")
   const [ password, setPassword ] = useState("")
-  const { backendUrl, setIsLoggedIn } = useContext(AppContext) 
+  const { backendUrl, setIsLoggedIn } = useContext(AppContext)
 
   const onHandleSubmit = async (e)=>{
     try {
