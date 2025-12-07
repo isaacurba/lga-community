@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from './AppContext';
 import { toast } from 'sonner';
 import axios from "axios"
+import { Spinner } from '@/components/ui/spinner';
 
 export const AppContextProvider = (props) => {
     const navigate = useNavigate();
@@ -10,16 +11,45 @@ export const AppContextProvider = (props) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false); 
     const [userData, setUserData] = useState(null);
     const [isAuthLoading, setIsAuthLoading] = useState(false);
+    const [isAppLoading, setIsAppLoading] = useState(true);
+    
 
     const getUserData = async ()=>{
         try {
+        axios.defaults.withCredentials = true;
         const {data} = await axios.get(backendUrl + "/api/staff/data")
-        data.success ? setUserData(data.userData) : toast.error(data.message)
+        if (data.success) {
+            setUserData(data.userData);
+        } else {
+            setUserData(null);
+        }
         } catch (error) {
-        const errorMessage = error.response?.data?.message || "An unexpected error occurred"
-        toast.error(errorMessage)
+           setUserData(null);
         }
     }
+
+    const getAuthState = async ()=>{
+    try {
+        axios.defaults.withCredentials = true;
+        const {data} = await axios.post(`${backendUrl}/api/staff/auth/is-auth`);
+        if (data.success){
+            setIsLoggedIn(true)
+            await getUserData(); 
+        } else {
+            setIsLoggedIn(false);
+            setUserData(null);
+        }
+    } catch (error) {
+        setIsLoggedIn(false);
+        setUserData(null);
+    } finally {
+        setIsAppLoading(false);
+    }
+    }
+
+    useEffect(()=>{
+        getAuthState()
+    },[])
 
     const logout = async () => {
         setIsAuthLoading(true);
@@ -45,8 +75,17 @@ export const AppContextProvider = (props) => {
         setUserData,
         getUserData,
         logout,
-        isAuthLoading
+        isAuthLoading,
+        isAppLoading
     };
+
+    if (isAppLoading) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center">
+                <Spinner className="h-10 w-10" />
+            </div>
+        );
+    }
 
     return (
         <AppContext.Provider value={value}>
