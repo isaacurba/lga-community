@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       select: false,
     },
-    // Add role field as specified
     role: {
       type: String,
       enum: ["staff", "admin"],
