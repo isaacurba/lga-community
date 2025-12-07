@@ -9,34 +9,38 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import {  Mail, Lock, Shield, User } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { AppContext } from "@/context/AppContext";
 import axios from "axios"
 import { toast } from "sonner";
 const StaffRegister = () => {
   const navigate = useNavigate();
-  const [ name, setName ] = useState("")
-  const [ email, setEmail ] = useState("")
-  const [ password, setPassword ] = useState("")
-  const {backendUrl, setIsLoggedIn} = useContext(AppContext);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const {backendUrl, setIsLoggedIn, getUserData} = useContext(AppContext);
 
   const onHandleSubmit =async (e) =>{
+    e.preventDefault();
+    setIsLoading(true);
     try {
-      e.preventDefault();
       axios.defaults.withCredentials = true;
-      const {data} = await axios.post(backendUrl + "/api/auth/register", {name, email, password})
+      const {data} = await axios.post(backendUrl + "/api/staff/auth/register", {name, email, password})
       if(data.success){
         setIsLoggedIn(true);
+        await getUserData();
         toast.success("Registration successful")
         navigate("/staff/dashboard")
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message;
+      const errorMessage = error.response?.data?.message || "Something went wrong";
       toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-      
   }
 
   return (
@@ -125,8 +129,15 @@ const StaffRegister = () => {
               </div>
             </div>
 
-            <Button variant="default" className="w-full h-11 text-base shadow-sm mt-2 bg-primary text-primary-foreground">
-              Register
+            <Button type="submit" disabled={isLoading} variant="default" className="w-full h-11 text-base shadow-sm mt-2 bg-primary text-primary-foreground">
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <Spinner className="mr-2 h-5 w-5" />
+                  Registering...
+                </span>
+              ) : (
+                'Register'
+              )}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground mt-4">

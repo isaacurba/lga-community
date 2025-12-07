@@ -7,7 +7,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="border-b py-4 px-6 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+    <nav className="py-4 px-16 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl m-auto flex items-center justify-between">
         
         {/* Logo Section */}
@@ -22,16 +22,7 @@ const Navbar = () => {
         <div className="hidden md:flex gap-4 items-center">
           <Link to="/login">
             <Button variant="outline" className="gap-2">
-              Staff Login <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
-
-          <Link to="/citizen/login">
-            <Button
-              variant="default"
-              className ="bg-primary text-primary-foreground"
-            >
-              Citizen Portal
+              Access Portal <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
         </div>

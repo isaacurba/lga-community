@@ -13,27 +13,33 @@ import { useContext, useState } from "react";
 import { AppContext } from "@/context/AppContext";
 import axios from "axios";
 import {toast} from "sonner"
+import { Spinner } from "@/components/ui/spinner";
 
 const StaffLogin = () => {
   const navigate = useNavigate()
 
   const [ email, setEmail ] = useState("")
   const [ password, setPassword ] = useState("")
-  const { backendUrl, setIsLoggedIn } = useContext(AppContext)
+  const [ isLoading, setIsLoading ] = useState(false)
+  const { backendUrl, setIsLoggedIn, getUserData } = useContext(AppContext)
 
   const onHandleSubmit = async (e)=>{
+    e.preventDefault();
+    setIsLoading(true);
     try {
-      e.preventDefault();
       axios.defaults.withCredentials = true;
-      const {data} = await axios.post(backendUrl + "/api/auth/login", {email, password});
+      const {data} = await axios.post(backendUrl + "/api/staff/auth/login", {email, password});
       if(data.success){
         setIsLoggedIn(true);
-        toast.success("Login Successfull")
+        await getUserData(); 
+        toast.success("Login Successful")
         navigate("/staff/dashboard")
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "An unexpected error occurred"
       toast.error(errorMessage)
+    } finally {
+      setIsLoading(false); 
     }
   }
 
@@ -105,8 +111,18 @@ const StaffLogin = () => {
               </div>
             </div>
 
-            <Button  variant="default" className="w-full h-11 text-base shadow-sm mt-2 bg-primary text-primary-foreground">
-              Login
+            <Button 
+              type="submit"
+              disabled={isLoading}
+              variant="default" className="w-full h-11 text-base shadow-sm mt-2 bg-primary text-primary-foreground">
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <Spinner className="mr-2 h-5 w-5" />
+                Logging in...
+              </span>
+            ) : (
+              'Login'
+            )}
             </Button>
 
             <div className="text-sm ">
