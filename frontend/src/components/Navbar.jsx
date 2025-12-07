@@ -41,18 +41,10 @@ const Navbar = () => {
         <div className="md:hidden mt-4 flex flex-col gap-3 pb-4 px-4">
           <Link to="/login">
             <Button variant="outline" className="w-full gap-2">
-              Staff Login <ArrowRight className="w-4 h-4" />
+              Access Portal <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
 
-          <Link to="/citizen/login">
-            <Button
-              variant="default"
-              className="w-full bg-primary text-primary-foreground"
-            >
-              Citizen Portal
-            </Button>
-          </Link>
         </div>
       )}
     </nav>
