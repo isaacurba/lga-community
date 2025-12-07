@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs"; 
+import bcrypt from "bcryptjs";
 
 const citizenSchema = new mongoose.Schema(
   {
@@ -36,6 +36,11 @@ const citizenSchema = new mongoose.Schema(
     originalLga: {
       type: String,
       required: true,
+    },
+    role: {
+      type: String,
+      enum: ["citizen", "staff"],
+      default: "citizen",
     },
     isAccountVerified: {
       type: Boolean,
