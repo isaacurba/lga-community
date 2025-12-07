@@ -53,13 +53,19 @@ export const citizenLogin = async (req, res) => {
     const citizen = await Citizen.findOne({ email }).select("+password");
 
     if (!citizen) {
-      return res.json({ success: false, message: "Invalid Email or Password" });
+      return res.json({
+        success: false,
+        message: "Invalid Email or Password",
+      });
     }
 
     const isMatch = await citizen.comparePassword(password);
 
     if (!isMatch) {
-      return res.json({ success: false, message: "Invalid Email or Password" });
+      return res.json({
+        success: false,
+        message: "Invalid Email or Password",
+      });
     }
 
     return sendAuthResponse(res, citizen);
@@ -224,7 +230,7 @@ Please log in to your account and change your password immediately. Keep your cr
 
 Access the Citizen Portal at: ${
       process.env.FRONTEND_URL || "http://localhost:5173"
-    }/citizen/login
+    }/login
 
 If you have any questions or need assistance, please don't hesitate to contact our support team.
 
@@ -474,7 +480,6 @@ export const citizenResetPassword = async (req, res) => {
   }
 };
 
-// FIX: Export missing functions to match imports in routes file
 export const citizenFunctions = {
   registerCitizen,
   citizenLogin,

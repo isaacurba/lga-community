@@ -76,5 +76,4 @@ citizenSchema.methods.comparePassword = async function (enteredPassword) {
 
 const Citizen = mongoose.model("Citizen", citizenSchema);
 
-// Fix: Use ES Module export syntax
 export default Citizen;
