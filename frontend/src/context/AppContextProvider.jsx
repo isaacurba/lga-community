@@ -29,22 +29,22 @@ export const AppContextProvider = (props) => {
     }
 
     const getAuthState = async ()=>{
-    try {
-        axios.defaults.withCredentials = true;
-        const {data} = await axios.post(`${backendUrl}/api/staff/auth/is-auth`);
-        if (data.success){
-            setIsLoggedIn(true)
-            await getUserData(); 
-        } else {
+        try {
+            axios.defaults.withCredentials = true;
+            const {data} = await axios.post(`${backendUrl}/api/staff/auth/is-auth`);
+            if (data.success){
+                setIsLoggedIn(true)
+                await getUserData(); 
+            } else {
+                setIsLoggedIn(false);
+                setUserData(null);
+            }
+        } catch (error) {
             setIsLoggedIn(false);
             setUserData(null);
+        } finally {
+            setIsAppLoading(false);
         }
-    } catch (error) {
-        setIsLoggedIn(false);
-        setUserData(null);
-    } finally {
-        setIsAppLoading(false);
-    }
     }
 
     useEffect(()=>{

@@ -34,10 +34,11 @@ const StaffRegister = () => {
         await getUserData();
         toast.success("Registration successful")
         navigate("/staff/dashboard")
+      } else{
+        toast.error(data.message)
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Something went wrong";
-      toast.error(errorMessage);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }

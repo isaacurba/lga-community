@@ -30,14 +30,15 @@ const StaffLogin = () => {
       axios.defaults.withCredentials = true;
       const {data} = await axios.post(backendUrl + "/api/staff/auth/login", {email, password});
       if(data.success){
-        setIsLoggedIn(true);
+        setIsLoggedIn(true);  
         await getUserData(); 
         toast.success("Login Successful")
         navigate("/staff/dashboard")
+      } else{
+        toast.error(data.message)
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "An unexpected error occurred"
-      toast.error(errorMessage)
+      toast.error(error.message)
     } finally {
       setIsLoading(false); 
     }
