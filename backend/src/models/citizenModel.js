@@ -28,6 +28,9 @@ const citizenSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    otherName: {
+      type: String,
+    },
     dob: {
       type: Date,
       required: true,
