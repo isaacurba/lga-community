@@ -473,13 +473,13 @@ export const citizenResetPassword = async (req, res) => {
   if (!email || !otp || !newPassword) {
     return res.json({
       success: false,
-      message: "Email, OTP and new Password is Required",
+      message: "Email, OTP and new password is Required",
     });
   }
   try {
     const user = await citizenModel
       .findOne({ email })
-      .select("+sendResetOtp +resetOtpExpireAt");
+      // .select("+sendResetOtp +resetOtpExpireAt");
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
@@ -489,8 +489,8 @@ export const citizenResetPassword = async (req, res) => {
     if (user.resetOtpExpireAt < Date.now()) {
       return res.json({ success: false, message: "OTP Expired" });
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    // const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     user.sendResetOtp = "";
     user.resetOtpExpireAt = 0;
