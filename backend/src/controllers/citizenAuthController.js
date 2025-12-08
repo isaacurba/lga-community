@@ -36,60 +36,6 @@ const sendAuthResponse = (res, user) => {
   return res.json({ success: true, token, user: userResponse });
 };
 
-// @desc    Citizen Login
-// @route   POST /api/citizen/auth/login
-export const citizenLogin = async (req, res) => {
-  let { email, password } = req.body;
-
-  if (email && typeof email === "string") {
-    email = email.trim().toLowerCase();
-  }
-
-  if (!email || !password) {
-    return res.json({
-      success: false,
-      message: "Email and Password are required",
-    });
-  }
-
-  try {
-    const citizen = await citizenModel.findOne({ email }).select("+password");
-
-    if (!citizen) {
-      return res.json({
-        success: false,
-        message: "Invalid Email or Password",
-      });
-    }
-    // Prefer using model method for comparing password (ensures consistent hashing use)
-    const isMatch = await citizen.comparePassword(password);
-
-    if (!isMatch) {
-      return res.json({
-        success: false,
-        message: "Invalid Email or Password",
-      });
-    }
-
-    return sendAuthResponse(res, citizen);
-  } catch (error) {
-    return res.json({ success: false, message: error.message });
-  }
-};
-
-export const citizenLogOut = async (req, res) => {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-    });
-    return res.json({ success: true, message: "Logged Out Successfully" });
-  } catch (error) {
-    return res.json({ success: false, message: error.message });
-  }
-};
-
 // @desc    Staff member registers a new citizen
 // @route   POST /api/staff/auth/register-citizen
 export const registerCitizen = async (req, res) => {
@@ -177,12 +123,8 @@ export const registerCitizen = async (req, res) => {
                           <td style="color: #666666; font-size: 14px; font-weight: bold; width: 30%;">Email:</td>
                           <td style="color: #333333; font-size: 14px; font-family: 'Courier New', monospace;">${email}</td>
                         </tr>
-                        <tr>
-                          <td style="color: #666666; font-size: 14px; font-weight: bold;">NIN ID:</td>
-                          <td style="color: #333333; font-size: 14px; font-family: 'Courier New', monospace;">${ninId}</td>
-                        </tr>
-                        <tr>
-                          <td style="color: #666666; font-size: 14px; font-weight: bold;">Password:</td>
+
+                        <td style="color: #666666; font-size: 14px; font-weight: bold;">Password:</td>
                           <td style="color: #333333; font-size: 14px; font-family: 'Courier New', monospace;">${password}</td>
                         </tr>
                       </table>
@@ -239,8 +181,7 @@ Your citizen account has been successfully created by our authorized staff. We'r
 YOUR LOGIN CREDENTIALS
 =======================
 Email: ${email}
-NIN ID: ${ninId}
-
+Password: ${password}
 IMPORTANT SECURITY NOTICE
 =========================
 Please log in to your account and change your password immediately. Keep your credentials secure and never share them with anyone.
@@ -303,6 +244,60 @@ This is an automated message from LGA-Connect Portal.
         message: "A user with this email or NIN ID already exists.",
       });
     }
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Citizen Login
+// @route   POST /api/citizen/auth/login
+export const citizenLogin = async (req, res) => {
+  let { email, password } = req.body;
+
+  if (email && typeof email === "string") {
+    email = email.trim().toLowerCase();
+  }
+
+  if (!email || !password) {
+    return res.json({
+      success: false,
+      message: "Email and Password are required",
+    });
+  }
+
+  try {
+    const citizen = await citizenModel.findOne({ email }).select("+password");
+
+    if (!citizen) {
+      return res.json({
+        success: false,
+        message: "Invalid Email or Password",
+      });
+    }
+    // Prefer using model method for comparing password (ensures consistent hashing use)
+    const isMatch = await citizen.comparePassword(password);
+
+    if (!isMatch) {
+      return res.json({
+        success: false,
+        message: "Invalid Email or Password",
+      });
+    }
+
+    return sendAuthResponse(res, citizen);
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+export const citizenLogOut = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    });
+    return res.json({ success: true, message: "Logged Out Successfully" });
+  } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
@@ -470,38 +465,42 @@ This is an automated message from LGA-Connect Portal.
 // @route   POST /api/citizen/auth/reset-password
 export const citizenResetPassword = async (req, res) => {
   const { email, otp, newPassword } = req.body;
+
   if (!email || !otp || !newPassword) {
     return res.json({
       success: false,
       message: "Email, OTP and new password is Required",
     });
   }
+
   try {
-    const user = await citizenModel
-      .findOne({ email })
-      // .select("+sendResetOtp +resetOtpExpireAt");
+    const user = await citizenModel.findOne({ email });
+
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
-    if (user.sendResetOtp === "" || user.sendResetOtp !== otp) {
+
+    if (!user.sendResetOtp || user.sendResetOtp !== otp) {
       return res.json({ success: false, message: "Invalid otp" });
     }
+
     if (user.resetOtpExpireAt < Date.now()) {
       return res.json({ success: false, message: "OTP Expired" });
     }
-    // const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+
+    user.password = newPassword;
     user.sendResetOtp = "";
     user.resetOtpExpireAt = 0;
 
     await user.save();
 
     return res.json({ success: true, message: "Password Reset Successfully" });
+
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
+
 
 export const citizenFunctions = {
   registerCitizen,
