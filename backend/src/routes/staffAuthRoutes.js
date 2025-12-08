@@ -9,14 +9,8 @@ import {
   resetPassword,
   sendResetOtp,
 } from "../controllers/staffAuthController.js";
+import { registerCitizen } from "../controllers/citizenAuthController.js";
 import userAuth from "../middleware/userAuth.js";
-// Import citizen controllers
-import {
-  citizenLogin,
-  registerCitizen,
-  citizenResetOtp,
-  citizenResetPassword,
-} from "../controllers/citizenAuthController.js";
 
 const authRouter = express.Router();
 
@@ -29,11 +23,6 @@ authRouter.post("/is-auth", userAuth, isAuthenticated);
 authRouter.post("/send-reset-otp", sendResetOtp);
 authRouter.post("/reset-password", resetPassword);
 
-// Add citizen routes as specified
-authRouter.post("/register-citizen", registerCitizen);
-authRouter.post("/login", citizenLogin);
-authRouter.post("/citizen/send-reset-otp", citizenResetOtp);
-authRouter.post("/citizen/reset-password", citizenResetPassword);
-
-
+// Staff-only route to register a new citizen
+authRouter.post("/register-citizen", userAuth, registerCitizen);
 export default authRouter;

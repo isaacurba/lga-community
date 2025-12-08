@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import userModel from "../models/staffModel.js";
+import staffModel from "../models/staffModel.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -12,11 +12,11 @@ export const register = async (req, res) => {
   }
 
   try {
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await staffModel.findOne({ email });
     if (existingUser) {
       return res.json({ success: false, message: "User already exists" });
     }
-    const user = new userModel({
+    const user = new staffModel({
       name,
       email,
       password,
@@ -193,7 +193,7 @@ export const login = async (req, res) => {
 
   try {
     // We add .select('+password') to retrieve the password hash
-    const user = await userModel.findOne({ email }).select("+password");
+    const user = await staffModel.findOne({ email }).select("+password");
 
     if (!user)
       return res.json({ success: false, message: "Invalid Email or Password" });
@@ -201,11 +201,14 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch)
-      return res.json({ success: false, message: "Invalid Email or Password" });
+      return res.json({
+        success: false,
+        message: "Invalid Email or Password",
+      });
 
     // Assuming role check will be added later, for now we log them in
     const token = jwt.sign(
-      { id: user._id, role: user.role || "citizen" },
+      { id: user._id, role: user.role || "staff" },
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
@@ -217,7 +220,7 @@ export const login = async (req, res) => {
       id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role || "citizen",
+      role: user.role || "staff",
     };
 
     res.cookie("token", token, {
@@ -252,7 +255,7 @@ export const logOut = async (req, res) => {
 export const sendVerifyOtp = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await userModel.findById(userId);
+    const user = await staffModel.findById(userId);
 
     if (user.isAccountVerified) {
       return res.json({ success: false, message: "Account already verified" });
@@ -403,7 +406,7 @@ export const verifyEmail = async (req, res) => {
     return res.json({ success: false, message: "Missing Details" });
   }
   try {
-    const user = await userModel.findById(userId);
+    const user = await staffModel.findById(userId);
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
@@ -439,7 +442,7 @@ export const sendResetOtp = async (req, res) => {
     return res.json({ success: false, message: "Email is Required" });
   }
   try {
-    const user = await userModel.findOne({ email });
+    const user = await staffModel.findOne({ email });
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
@@ -593,7 +596,9 @@ export const resetPassword = async (req, res) => {
     });
   }
   try {
-    const user = await userModel.findOne({ email });
+    const user = await staffModel
+      .findOne({ email })
+      .select("+resetOtp +resetOtpExpireAt");
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }

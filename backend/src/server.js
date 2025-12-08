@@ -2,9 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectedDB from "./config/db.js";
-import authRouter from "./routes/authRoutes.js";
+import staffAuthRouter from "./routes/staffAuthRoutes.js";
 import cookieParser from "cookie-parser";
 import staffRouter from "./routes/staffRoutes.js";
+import citizenAuthRouter from "./routes/citizenAuthRoutes.js";
 import citizenRouter from "./routes/citizenRoutes.js";
 
 dotenv.config();
@@ -27,7 +28,8 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-app.use("/api/staff/auth", authRouter);
+app.use("/api/staff/auth", staffAuthRouter);
+app.use('/api/citizen/auth', citizenAuthRouter);
 app.use("/api/staff", staffRouter);
 app.use("/api/citizen", citizenRouter);
 

@@ -3,7 +3,7 @@ import citizenModel from "../models/citizenModel.js";
 
 export const getStaffData = async (req, res) => {
   try {
-    const userId = req.userId || req.body?.userId;
+    const userId = req.userId;
     if (!userId) {
       return res.json({
         success: false,
@@ -23,16 +23,21 @@ export const getStaffData = async (req, res) => {
       userData: {
         name: user.name,
         isAccountVerified: user.isAccountVerified,
+        role: "staff",
       },
     });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    console.error("Error in getStaffData:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
 export const getCitizenData = async (req, res) => {
   try {
-    const userId = req.userId || req.body?.userId;
+    const userId = req.userId;
     if (!userId) {
       return res.json({
         success: false,
@@ -50,14 +55,15 @@ export const getCitizenData = async (req, res) => {
     res.json({
       success: true,
       userData: {
-        name: user.ninId,
-        name: user.firstName,
-        name: user.lastName,
+        ninId: user.ninId,
+        firstName: user.firstName,
+        lastName: user.lastName,
         isAccountVerified: user.isAccountVerified,
+        role: "citizen",
       },
     });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    console.error("Error in getCitizenData:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-

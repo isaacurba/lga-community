@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import citizenModel from "../models/citizenModel.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
-import Citizen from "../models/citizenModel.js";
 dotenv.config();
 
 // Helper function to handle cookie and token response
@@ -38,9 +37,13 @@ const sendAuthResponse = (res, user) => {
 };
 
 // @desc    Citizen Login
-// @route   POST /api/staff/auth/citizen/login
+// @route   POST /api/citizen/auth/login
 export const citizenLogin = async (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
+
+  if (email && typeof email === "string") {
+    email = email.trim().toLowerCase();
+  }
 
   if (!email || !password) {
     return res.json({
@@ -50,7 +53,7 @@ export const citizenLogin = async (req, res) => {
   }
 
   try {
-    const citizen = await Citizen.findOne({ email }).select("+password");
+    const citizen = await citizenModel.findOne({ email }).select("+password");
 
     if (!citizen) {
       return res.json({
@@ -58,7 +61,7 @@ export const citizenLogin = async (req, res) => {
         message: "Invalid Email or Password",
       });
     }
-
+    // Prefer using model method for comparing password (ensures consistent hashing use)
     const isMatch = await citizen.comparePassword(password);
 
     if (!isMatch) {
@@ -74,7 +77,20 @@ export const citizenLogin = async (req, res) => {
   }
 };
 
-// @desc    Staff registers a new citizen
+export const citizenLogOut = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    });
+    return res.json({ success: true, message: "Logged Out Successfully" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Staff member registers a new citizen
 // @route   POST /api/staff/auth/register-citizen
 export const registerCitizen = async (req, res) => {
   const {
@@ -96,19 +112,21 @@ export const registerCitizen = async (req, res) => {
     !lastName ||
     !originalLga
   ) {
-    return res.json({ success: false, message: "Missing required fields" });
+    return res.json({
+      success: false,
+      message: "Missing required fields",
+    });
   }
 
   try {
-    const existingCitizen = await Citizen.findOne({ ninId });
+    const existingCitizen = await citizenModel.findOne({ ninId });
     if (existingCitizen) {
       return res.json({
         success: false,
         message: "Citizen with this NIN ID already exists",
       });
     }
-
-    const newCitizen = new Citizen({
+    const newCitizen = new citizenModel({
       ninId,
       email,
       password,
@@ -152,7 +170,7 @@ export const registerCitizen = async (req, res) => {
                       Your citizen account has been successfully created by our authorized staff. We're excited to have you join the LGA-Connect Portal.
                     </p>
                     
-                    <div style="background-color: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin: 30px 0; border-radius: 4px;">
+                      <div style="background-color: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin: 30px 0; border-radius: 4px;">
                       <h3 style="margin: 0 0 15px 0; color: #333333; font-size: 18px;">Your Login Credentials</h3>
                       <table cellpadding="8" cellspacing="0" border="0" width="100%">
                         <tr>
@@ -179,7 +197,7 @@ export const registerCitizen = async (req, res) => {
                     <div style="text-align: center; margin: 30px 0;">
                       <a href="${
                         process.env.FRONTEND_URL || "http://localhost:5173"
-                      }/citizen/login"
+                      }/login"
                          style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);">
                         Access Citizen Portal
                       </a>
@@ -222,7 +240,6 @@ YOUR LOGIN CREDENTIALS
 =======================
 Email: ${email}
 NIN ID: ${ninId}
-Password: ${password}
 
 IMPORTANT SECURITY NOTICE
 =========================
@@ -273,7 +290,11 @@ This is an automated message from LGA-Connect Portal.
     return res.json({
       success: true,
       message: "Citizen registered successfully",
-      citizen: { ninId: newCitizen.ninId, email: newCitizen.email },
+      citizen: {
+        ninId: newCitizen.ninId,
+        email: newCitizen.email,
+        role: newCitizen.role,
+      },
     });
   } catch (error) {
     if (error.code === 11000) {
@@ -287,7 +308,7 @@ This is an automated message from LGA-Connect Portal.
 };
 
 // @desc    Citizen reset otp
-// @route   POST /api/staff/auth/citizen/send-reset-otp
+// @route   POST /api/citizen/auth/send-reset-otp
 export const citizenResetOtp = async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -446,7 +467,7 @@ This is an automated message from LGA-Connect Portal.
 };
 
 // @desc    Citizen reset password
-// @route   POST /api/staff/auth/citizen/reset-password
+// @route   POST /api/citizen/auth/reset-password
 export const citizenResetPassword = async (req, res) => {
   const { email, otp, newPassword } = req.body;
   if (!email || !otp || !newPassword) {
@@ -456,7 +477,9 @@ export const citizenResetPassword = async (req, res) => {
     });
   }
   try {
-    const user = await citizenModel.findOne({ email });
+    const user = await citizenModel
+      .findOne({ email })
+      .select("+sendResetOtp +resetOtpExpireAt");
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }

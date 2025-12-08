@@ -1,6 +1,6 @@
 import express from "express";
 import userAuth from "../middleware/userAuth.js";
-import { getStaffData } from "../controllers/roleController.js";
+import { getStaffData } from "../controllers/roleDataController.js";
 
 const staffRouter = express.Router();
 
