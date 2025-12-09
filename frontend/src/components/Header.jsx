@@ -42,7 +42,7 @@ const Header = () => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
 
-            <Link to="/citizen/login">
+            <Link to="/login"> {/* Pointing to unified login */}
               <Button size="lg" variant="outline" className="h-12 px-8 text-base">
                 View our Docs
                 <ArrowRight className="w-4 h-4" />
