@@ -20,7 +20,7 @@ export const getStaffData = async (req, res) => {
     }
     res.json({
       success: true,
-      userData: {
+      staffData: {
         name: user.name,
         isAccountVerified: user.isAccountVerified,
         role: "staff",
@@ -54,7 +54,7 @@ export const getCitizenData = async (req, res) => {
     }
     res.json({
       success: true,
-      userData: {
+      citizenData: {
         ninId: user.ninId,
         firstName: user.firstName,
         lastName: user.lastName,

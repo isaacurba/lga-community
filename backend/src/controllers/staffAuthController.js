@@ -24,9 +24,16 @@ export const register = async (req, res) => {
     await user.save();
 
     // generate token for auth
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      {
+        id: user._id,
+        role: user.role || "staff",
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -123,7 +130,7 @@ export const register = async (req, res) => {
     const textContent = `
 Welcome to LGA-Connect Staff Portal!
 
-Dear ${user.name},
+Welcome ${user.name},
 
 Your staff account has been successfully created. You now have access to the LGA-Connect Staff Portal to manage community services and support citizens.
 
@@ -177,7 +184,7 @@ This is an automated message from LGA-Connect Portal.
       user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
 
@@ -234,20 +241,6 @@ export const login = async (req, res) => {
     return res.json({ success: true, token, user: userResponse });
   } catch (error) {
     return res.json({ success: false, message: error.message });
-  }
-};
-
-export const logOut = async (req, res) => {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-    return res.json({ success: true, message: "Logged Out" });
-  } catch (error) {
-    res.json({ success: false, message: error.message });
   }
 };
 
@@ -392,10 +385,10 @@ This is an automated message from LGA-Connect Portal.
     }
     return res.json({
       success: true,
-      message: "Verification OTP sent on Email;",
+      message: "Verification OTP sent on Email",
     });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
 
@@ -583,7 +576,7 @@ This is an automated message from LGA-Connect Portal.
       message: "Reset OTP sent on Email;",
     });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
 

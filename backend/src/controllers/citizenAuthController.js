@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import citizenModel from "../models/citizenModel.js";
 import transporter from "../config/nodemailer.js";
@@ -82,7 +81,7 @@ export const registerCitizen = async (req, res) => {
       currentAddress,
       originalLga,
       isVerified: true,
-    });
+    });                                 
     await newCitizen.save();
 
     // Professional HTML email template
@@ -289,14 +288,9 @@ export const citizenLogin = async (req, res) => {
   }
 };
 
-export const citizenLogOut = async (req, res) => {
+export const isAuthenticated = async (req, res) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-    });
-    return res.json({ success: true, message: "Logged Out Successfully" });
+    return res.json({ success: true, message: "User Authenticated" });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -400,7 +394,7 @@ export const citizenResetOtp = async (req, res) => {
     const textContent = `
 PASSWORD RESET REQUEST CITIZEN- LGA-Connect
 
-Dear ${user.name},
+Dear ${user.firstName},
 
 We received a request to reset your password for your LGA-Connect account. Please use the One-Time Password (OTP) below to proceed:
 
@@ -507,4 +501,5 @@ export const citizenFunctions = {
   citizenLogin,
   citizenResetOtp,
   citizenResetPassword,
+  isAuthenticated
 };
