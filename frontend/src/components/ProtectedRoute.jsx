@@ -4,9 +4,11 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { toast } from 'sonner'
 
 const ProtectedRoute = ({ allowedRoles }) => {
-  const { isLoggedIn, userData, isAppLoading } = useContext(AppContext);
+  const { isLoggedIn, isAppLoading, userData } = useContext(AppContext);
   const [hasShownToast, setHasShownToast] = useState(false);
 
+  console.log(isLoggedIn)
+  
   if (isAppLoading) {
     return null; 
   }
@@ -19,6 +21,10 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
+  if (!userData) {
+    return null;
+  }
+
   const userRole = userData?.role;
 
   if (allowedRoles && !allowedRoles.includes(userRole)) {
@@ -26,6 +32,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
       toast.error("You are not authorized to access this page.");
       setHasShownToast(true);
     }
+
     return <Navigate to="/unauthorised" replace />;
   }
 

@@ -39,28 +39,30 @@ const Login = () => {
 
       response = await axios
         .post(`${backendUrl}/api/staff/auth/login`, { email, password })
-        .catch(() => null);
 
       if (!response || !response.data.success) {
         response = await axios
           .post(`${backendUrl}/api/citizen/auth/login`, { email, password })
-          .catch(() => null);
       }
 
       if (!response || !response.data?.success) {
         return toast.error("Invalid credentials.");
       }
+      const user = response.data.user.role
 
       setIsLoggedIn(true);
-      const user = await getUserData(); // your backend returns role inside user
 
       toast.success("Login Successful");
 
-      navigate(
-        user?.role === "staff"
-          ? "/staff/dashboard"
-          : "/citizen/dashboard"
-      );
+      if (user) {
+        navigate(
+          user === "staff"
+            ? "/staff/dashboard"
+            : "/citizen/dashboard"
+        );
+      } else {
+        navigate("/");
+      }
 
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");

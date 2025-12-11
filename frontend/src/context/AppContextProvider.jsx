@@ -21,16 +21,13 @@ export const AppContextProvider = (props) => {
     try {
       const staff = await axios
         .get(`${backendUrl}/api/staff/data`)
-        .catch(() => null);
-
+        
       if (staff?.data?.success) {
         setUserData(staff.data.userData);
-        return staff.data.userData;
       }
 
       const citizen = await axios
         .get(`${backendUrl}/api/citizen/data`)
-        .catch(() => null);
 
       if (citizen?.data?.success) {
         setUserData(citizen.data.userData);
@@ -48,15 +45,9 @@ export const AppContextProvider = (props) => {
 
   const getAuthState = async () => {
     try {
-      let auth = await axios
-        .get(`${backendUrl}/api/staff/auth/is-auth`)
+      const auth = await axios
+        .post(`${backendUrl}/api/auth/is-auth`)
         .catch(() => null);
-
-      if (!auth?.data?.success) {
-        auth = await axios
-          .post(`${backendUrl}/api/citizen/auth/is-auth`)
-          .catch(() => null);
-      }
 
       if (auth?.data?.success) {
         setIsLoggedIn(true);

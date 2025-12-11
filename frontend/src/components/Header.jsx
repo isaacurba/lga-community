@@ -26,7 +26,6 @@ const Header = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
 
-      {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4 py-20 bg-gradient-to-b from-background to-muted/20">
         <div className="max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20 mb-4">
@@ -42,7 +41,7 @@ const Header = () => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
 
-            <Link to="/login"> {/* Pointing to unified login */}
+            <Link to="/login"> 
               <Button size="lg" variant="outline" className="h-12 px-8 text-base">
                 View our Docs
                 <ArrowRight className="w-4 h-4" />
@@ -58,7 +57,6 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-24 px-4">
           {features.map((feature) => (
             <div key={feature.title} className="flex flex-col items-center p-6 bg-card rounded-xl shadow-sm border">
@@ -72,7 +70,7 @@ const Header = () => {
         </div>
       </main>
 
-      {/* Footer */}
+
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
         <p>&copy; 2025 LGA-Connect. Secured & Official.</p>
       </footer>
