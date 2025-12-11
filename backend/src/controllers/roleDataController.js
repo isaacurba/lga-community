@@ -19,7 +19,7 @@ export const getStaffData = async (req, res) => {
       });
     }
     res.json({
-      success: true,
+      success: true,  
       staffData: {
         name: user.name,
         isAccountVerified: user.isAccountVerified,

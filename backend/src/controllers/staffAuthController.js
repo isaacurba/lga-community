@@ -199,7 +199,6 @@ export const login = async (req, res) => {
   }
 
   try {
-    // We add .select('+password') to retrieve the password hash
     const user = await staffModel.findOne({ email }).select("+password");
 
     if (!user)
@@ -220,9 +219,8 @@ export const login = async (req, res) => {
       {
         expiresIn: "7d",
       }
-    );
+    );      
 
-    // Do NOT send the password in the user object
     const userResponse = {
       id: user._id,
       name: user.name,
