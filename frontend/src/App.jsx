@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import StaffHome from './pages/Home';
 import Login from './components/Login';
 import EmailVerify from './components/EmailVerify';
-import StaffResetPassword from './pages/staff/StaffResetPassword';
+import ResetPassword from './components/ResetPassword';
 import StaffRegister from "./pages/staff/StaffRegister";
 import StaffDashboard from "./pages/staff/StaffDashboard";
 import CitizenDashboard from "./pages/citizen/CitizenDashboard";
@@ -17,10 +17,11 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/staff/register" element={<StaffRegister />} />
       <Route path="/unauthorised" element={<Unauthorised />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+
 
       <Route element={<ProtectedRoute allowedRoles={["staff"]} />}>
         <Route path="/verify-email" element={<EmailVerify />} />
-        <Route path="/staff/reset-password" element={<StaffResetPassword />} />
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
       </Route>
 
