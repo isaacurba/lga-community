@@ -21,7 +21,7 @@ const sendAuthResponse = (res, user) => {
     email: user.email,
     ninId: user.ninId,
     originalLga: user.originalLga,
-    isVerified: user.isVerified,
+    isAccountVerified: user.isAccountVerified,
     role: "citizen",
   };
 
@@ -80,8 +80,8 @@ export const registerCitizen = async (req, res) => {
       dob,
       currentAddress,
       originalLga,
-      isVerified: true,
-    });                                 
+      isAccountVerified: true,
+    });
     await newCitizen.save();
 
     // Professional HTML email template

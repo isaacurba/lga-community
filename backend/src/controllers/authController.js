@@ -1,3 +1,11 @@
+export const isAuthenticated = async (req, res) => {
+  try {
+    return res.json({ success: true, message: "User Authenticated" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
 export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
@@ -13,4 +21,4 @@ export const logout = async (req, res) => {
   }
 };
 
-export default { logout };
+export default { isAuthenticated, logout };
