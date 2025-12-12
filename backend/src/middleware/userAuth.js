@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
 
-const citizenAuth = (req, res, next) => {
+const verifyUser = (req, res, next, requiredRole) => {
   const { token } = req.cookies;
   if (!token) return res.json({ success: false });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.role !== "citizen") {
+    if (requiredRole && decoded.role !== requiredRole) {
       return res.json({ success: false, message: "Forbidden" });
     }
     req.userId = decoded.id;
@@ -16,25 +16,11 @@ const citizenAuth = (req, res, next) => {
   }
 };
 
-const staffAuth = (req, res, next) => {
-  const { token } = req.cookies;
-  if (!token) return res.json({ success: false });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.role !== "staff") {
-      return res.json({ success: false, message: "Forbidden" });
-    }
-    req.userId = decoded.id;
-    next();
-  } catch {
-    return res.json({ success: false });
-  }
-};
+const citizenAuth = (req, res, next) => verifyUser(req, res, next, "citizen");
+const staffAuth = (req, res, next) => verifyUser(req, res, next, "staff");
+const genericAuth = (req, res, next) => verifyUser(req, res, next);
 
 
-// Keep named exports and export a single default middleware function
-export { citizenAuth, staffAuth };
+export { citizenAuth, staffAuth, genericAuth };
 
-// default export: generic auth middleware (verifies token and sets req.userId)
 export default citizenAuth;
