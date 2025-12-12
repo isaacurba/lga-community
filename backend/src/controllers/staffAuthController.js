@@ -23,11 +23,10 @@ export const register = async (req, res) => {
     });
     await user.save();
 
-    // generate token for auth
     const token = jwt.sign(
       {
         id: user._id,
-        role: user.role || "staff",
+        role: "staff",
       },
       process.env.JWT_SECRET,
       {

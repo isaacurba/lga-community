@@ -9,7 +9,7 @@ import {
   sendResetOtp,
 } from "../controllers/staffAuthController.js";
 import { registerCitizen } from "../controllers/citizenAuthController.js";
-import staffAuth from "../middleware/userAuth.js";
+import { staffAuth } from "../middleware/userAuth.js";
 
 const authRouter = express.Router();
 
