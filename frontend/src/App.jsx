@@ -5,7 +5,7 @@ import EmailVerify from './components/EmailVerify';
 import StaffResetPassword from './pages/staff/StaffResetPassword';
 import StaffRegister from "./pages/staff/StaffRegister";
 import StaffDashboard from "./pages/staff/StaffDashboard";
-import CitizenDashboard from "./pages/citizen/citizenDashboard";
+import CitizenDashboard from "./pages/citizen/CitizenDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorised from "./components/Unauthorised";
 

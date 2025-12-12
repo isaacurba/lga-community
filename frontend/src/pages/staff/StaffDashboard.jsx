@@ -36,12 +36,12 @@ const StaffDashboard = () => {
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
                 </span>
               )} */}
-
             </div>
 
             <div className="flex items-center gap-2">
               <p className="hidden text-sm text-muted-foreground sm:inline-block">
-                Welcome, {userData ? userData.name : 'Staff'}
+                {/* 修改欢迎信息显示逻辑，处理加载状态 */}
+                Welcome, {!userData && isAuthLoading ? 'Staff' : (userData ? userData.name : 'Staff')}
               </p>
               <Button
                 onClick={logout}
@@ -66,61 +66,69 @@ const StaffDashboard = () => {
         </header>
 
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-          {/* --- Verification Banner --- */}
-
-          {userData && !userData.isAccountVerified && (
-            <div className="flex items-center gap-4 rounded-lg border border-primary/30 bg-primary/5 p-4 text-primary-foreground">
-              <ShieldAlert className="h-6 w-6 text-primary" />
-              <div className="flex-1">
-                <p className="font-semibold text-primary">Account Verification Required</p>
-                <p className="text-sm text-primary/80">
-                  Please verify your account to unlock full platform capabilities.
-                </p>
-              </div>
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                Verify Account
-              </Button>
+          {/* 添加加载状态处理 */}
+          {isAuthLoading ? (
+            <div className="flex justify-center items-center h-32">
+              <Spinner className="h-8 w-8" />
             </div>
-          )}
+          ) : (
+            <>
+              {/* --- Verification Banner --- */}
+              {userData && userData.isAccountVerified !== undefined && !userData.isAccountVerified && (
+                <div className="flex items-center gap-4 rounded-lg border border-primary/30 bg-primary/5 p-4 text-primary-foreground">
+                  <ShieldAlert className="h-6 w-6 text-primary" />
+                  <div className="flex-1">
+                    <p className="font-semibold text-primary">Account Verification Required</p>
+                    <p className="text-sm text-primary/80">
+                      Please verify your account to unlock full platform capabilities.
+                    </p>
+                  </div>
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    Verify Account
+                  </Button>
+                </div>
+              )}
 
-          {/* --- Main Dashboard Content Goes Here --- */}
-          <h2 className="text-lg font-semibold">Overview</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="transition-all hover:shadow-md hover:-translate-y-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Citizens
-                </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">1,254</div>
-                <p className="text-xs text-muted-foreground">
-                  +122 this month
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="transition-all hover:shadow-md hover:-translate-y-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Certificates Issued</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+2,350</div>
-                <p className="text-xs text-muted-foreground">+520 this month</p>
-              </CardContent>
-            </Card>
-            <Card className="transition-all hover:shadow-md hover:-translate-y-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Staff</CardTitle>
-                <Building className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+57</div>
-                <p className="text-xs text-muted-foreground">+2 since last hour</p>
-              </CardContent>
-            </Card>
-          </div>
+              {/* --- Main Dashboard Content Goes Here --- */}
+              <h2 className="text-lg font-semibold">Overview</h2>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <Card className="transition-all hover:shadow-md hover:-translate-y-1">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Total Citizens
+                    </CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">1,254</div>
+                    <p className="text-xs text-muted-foreground">
+                      +122 this month
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="transition-all hover:shadow-md hover:-translate-y-1">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Certificates Issued</CardTitle>
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">+2,350</div>
+                    <p className="text-xs text-muted-foreground">+520 this month</p>
+                  </CardContent>
+                </Card>
+                <Card className="transition-all hover:shadow-md hover:-translate-y-1">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Active Staff</CardTitle>
+                    <Building className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">+57</div>
+                    <p className="text-xs text-muted-foreground">+2 since last hour</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
         </main>
       </div>  
     </div>

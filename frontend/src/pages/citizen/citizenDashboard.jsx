@@ -41,7 +41,7 @@ const CitizenDashboard = () => {
 
             <div className="flex items-center gap-2">
               <p className="hidden text-sm text-muted-foreground sm:inline-block">
-                Welcome, {userData ? userData.role : 'Citizen'}
+                Welcome, {userData ? userData.firstName : 'Citizen'}
               </p>
               <Button
                 onClick={logout}
@@ -68,7 +68,7 @@ const CitizenDashboard = () => {
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           {/* --- Verification Banner --- */}
 
-          {userData && !userData.isAccountVerified && (
+          {userData && userData.isAccountVerified !== undefined && !userData.isAccountVerified && (
             <div className="flex items-center gap-4 rounded-lg border border-primary/30 bg-primary/5 p-4 text-primary-foreground">
               <ShieldAlert className="h-6 w-6 text-primary" />
               <div className="flex-1">
@@ -80,9 +80,8 @@ const CitizenDashboard = () => {
               <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                 Verify Account
               </Button>
-            </div>
+            </div>                                                      
           )}
-
 
           {/* --- Main Dashboard Content Goes Here --- */}
           <h2 className="text-lg font-semibold">Overview</h2>

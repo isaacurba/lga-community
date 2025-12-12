@@ -21,7 +21,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { backendUrl, setIsLoggedIn, getUserData } = useContext(AppContext);
+  const { backendUrl, setIsLoggedIn, setUserData } = useContext(AppContext);
 
   const onHandleSubmit = async (e) => {
     e.preventDefault();
@@ -49,8 +49,9 @@ const Login = () => {
         return toast.error("Invalid credentials.");
       }
       const user = response.data.user.role
-
+      console.log(user)
       setIsLoggedIn(true);
+      setUserData(response.data.user);
 
       toast.success("Login Successful");
 
@@ -104,6 +105,7 @@ const Login = () => {
                 <Mail className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
                 <Input
                   htmlFor="email"
+                  name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
@@ -119,6 +121,7 @@ const Login = () => {
                 <Lock className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
                 <Input
                   htmlFor="password"
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type="password"

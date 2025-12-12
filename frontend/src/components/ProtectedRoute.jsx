@@ -6,8 +6,6 @@ import { toast } from 'sonner'
 const ProtectedRoute = ({ allowedRoles }) => {
   const { isLoggedIn, isAppLoading, userData } = useContext(AppContext);
   const [hasShownToast, setHasShownToast] = useState(false);
-
-  console.log(isLoggedIn)
   
   if (isAppLoading) {
     return null; 
@@ -22,7 +20,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   if (!userData) {
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const userRole = userData?.role;
@@ -40,3 +38,4 @@ const ProtectedRoute = ({ allowedRoles }) => {
 }
 
 export default ProtectedRoute;
+
