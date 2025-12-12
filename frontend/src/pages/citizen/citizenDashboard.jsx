@@ -9,9 +9,12 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from '@/components/ui/spinner';
 import { LogOut, ShieldAlert, Bell, Users, FileText, Building } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const CitizenDashboard = () => {
   const { userData, logout, isAuthLoading } = useContext(AppContext);
+   const navigate = useNavigate();
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -30,12 +33,12 @@ const CitizenDashboard = () => {
                 <Bell className="h-4 w-4" />
                 <span className="sr-only">Toggle notifications</span>
               </Button>
-              {/* {userData && !userData.isAccountVerified (
+              {userData && userData.isAccountVerified !== undefined && !userData.isAccountVerified && (
                 <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
                 </span>
-              )} */}
+              )}
 
             </div>
 
@@ -77,7 +80,7 @@ const CitizenDashboard = () => {
                   Please verify your account to unlock full platform capabilities.
                 </p>
               </div>
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button onClick={()=> navigate("/verify-email")} className="bg-primary text-primary-foreground hover:bg-primary/90">
                 Verify Account
               </Button>
             </div>                                                      

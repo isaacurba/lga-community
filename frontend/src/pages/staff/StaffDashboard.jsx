@@ -1,5 +1,5 @@
 import { AppContext } from '@/context/AppContext';
-import { useContext } from 'react';
+import { useContext, useNavigate } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,6 +12,7 @@ import { LogOut, ShieldAlert, Bell, Users, FileText, Building } from 'lucide-rea
 
 const StaffDashboard = () => {
   const { userData, logout, isAuthLoading } = useContext(AppContext);
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -66,7 +67,6 @@ const StaffDashboard = () => {
         </header>
 
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-          {/* 添加加载状态处理 */}
           {isAuthLoading ? (
             <div className="flex justify-center items-center h-32">
               <Spinner className="h-8 w-8" />
@@ -83,7 +83,7 @@ const StaffDashboard = () => {
                       Please verify your account to unlock full platform capabilities.
                     </p>
                   </div>
-                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button onClick={()=> navigate("/reset-password")}  className="bg-primary text-primary-foreground hover:bg-primary/90">
                     Verify Account
                   </Button>
                 </div>
