@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,13 +5,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ShieldCheck, Loader2, ArrowLeft } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { useState } from "react";
 
 const EmailVerify = () => {
-
+  // const [ otp, setOtp ] = useState("");
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 py-12 relative overflow-hidden">
       
@@ -46,6 +45,7 @@ const EmailVerify = () => {
               <div className="flex justify-center">
                 <Input
                   type="text"
+                  onChannge={(e)=>e.target.value}
                   className="text-center text-2xl tracking-[0.5em] font-mono h-14 w-full max-w-[280px] bg-background/50 border-2 focus-visible:ring-offset-0 focus-visible:border-primary"              
                   placeholder="000000"  
                   maxLength={6}

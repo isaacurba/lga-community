@@ -1,5 +1,6 @@
 import { AppContext } from '@/context/AppContext';
-import { useContext, useNavigate } from 'react';
+import { useContext, useState } from 'react';
+import { useNavigate } from "react-router-dom"
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,10 +10,34 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from '@/components/ui/spinner';
 import { LogOut, ShieldAlert, Bell, Users, FileText, Building } from 'lucide-react';
+import axios from "axios"
+import {toast} from "sonner"
 
-const StaffDashboard = () => {
-  const { userData, logout, isAuthLoading } = useContext(AppContext);
+const StaffDashboard = () => {  
   const navigate = useNavigate();
+  const { userData, logout, isAuthLoading, backendUrl } = useContext(AppContext);
+  const [ isverifying, setIsVerifying ] = useState(false)
+
+  const sendVerificationOtp = async () =>{
+    console.log("ancjidbv")
+    setIsVerifying(true);
+    try {
+      axios.defaults.withCredentials = true;
+      const {data} = await axios.post(`${backendUrl}/api/staff/auth/send-verify-otp`)
+      if (data.success){
+        navigate("/verify-email")
+        toast.success(data.message)
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    } finally{
+      setIsVerifying(false)
+    }
+  }
+
+  
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -31,24 +56,22 @@ const StaffDashboard = () => {
                 <Bell className="h-4 w-4" />
                 <span className="sr-only">Toggle notifications</span>
               </Button>
-              {/* {userData && !userData.isAccountVerified (
+              {userData && !userData.isAccountVerified && (
                 <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
                 </span>
-              )} */}
+              )}
             </div>
 
             <div className="flex items-center gap-2">
               <p className="hidden text-sm text-muted-foreground sm:inline-block">
-                {/* 修改欢迎信息显示逻辑，处理加载状态 */}
                 Welcome, {!userData && isAuthLoading ? 'Staff' : (userData ? userData.name : 'Staff')}
               </p>
               <Button
                 onClick={logout}
                 variant="outline"
                 size="sm"
-                disabled={isAuthLoading}
               >
                 {isAuthLoading ? (
                   <span className="flex items-center justify-center">
@@ -67,14 +90,9 @@ const StaffDashboard = () => {
         </header>
 
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-          {isAuthLoading ? (
-            <div className="flex justify-center items-center h-32">
-              <Spinner className="h-8 w-8" />
-            </div>
-          ) : (
-            <>
+            
               {/* --- Verification Banner --- */}
-              {userData && userData.isAccountVerified !== undefined && !userData.isAccountVerified && (
+              {userData && !userData.isAccountVerified && (
                 <div className="flex items-center gap-4 rounded-lg border border-primary/30 bg-primary/5 p-4 text-primary-foreground">
                   <ShieldAlert className="h-6 w-6 text-primary" />
                   <div className="flex-1">
@@ -83,9 +101,26 @@ const StaffDashboard = () => {
                       Please verify your account to unlock full platform capabilities.
                     </p>
                   </div>
-                  <Button onClick={()=> navigate("/reset-password")}  className="bg-primary text-primary-foreground hover:bg-primary/90">
-                    Verify Account
-                  </Button>
+
+                  {isverifying ? (
+                      <span
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      >
+                        <Spinner className="mr-2 h-4 w-4" />
+                        Sending...
+                      </span>   
+                  ) : (
+                  <Button
+                    disabled={isverifying} 
+                    onClick={sendVerificationOtp}  
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    >
+                      <span className="flex items-center gap-2">
+                        Verify Account
+                      </span>               
+                   </Button>
+                  )}
+
                 </div>
               )}
 
@@ -127,8 +162,6 @@ const StaffDashboard = () => {
                   </CardContent>
                 </Card>
               </div>
-            </>
-          )}
         </main>
       </div>  
     </div>

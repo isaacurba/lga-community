@@ -1,4 +1,5 @@
 import { AppContext } from '@/context/AppContext';
+import { useState } from 'react';
 import { useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,12 +10,21 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from '@/components/ui/spinner';
 import { LogOut, ShieldAlert, Bell, Users, FileText, Building } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 const CitizenDashboard = () => {
-  const { userData, logout, isAuthLoading } = useContext(AppContext);
-   const navigate = useNavigate();
+  const { userData, logout, isAuthLoading, sendVerificationOtp } = useContext(AppContext);
+  const [ isVerifying, setIsVerifying ] = useState(false)
 
+  const handleVerifyAccount = async ()=>{
+     try {
+      setIsVerifying(true)
+      await sendVerificationOtp();
+    } catch (error) {
+      console.error(error)
+    } finally{
+      setIsVerifying(false)
+    }
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -33,13 +43,12 @@ const CitizenDashboard = () => {
                 <Bell className="h-4 w-4" />
                 <span className="sr-only">Toggle notifications</span>
               </Button>
-              {userData && userData.isAccountVerified !== undefined && !userData.isAccountVerified && (
+              {userData && !userData.isAccountVerified && (
                 <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
                 </span>
               )}
-
             </div>
 
             <div className="flex items-center gap-2">
@@ -69,22 +78,33 @@ const CitizenDashboard = () => {
         </header>
 
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-          {/* --- Verification Banner --- */}
 
-          {userData && userData.isAccountVerified !== undefined && !userData.isAccountVerified && (
-            <div className="flex items-center gap-4 rounded-lg border border-primary/30 bg-primary/5 p-4 text-primary-foreground">
-              <ShieldAlert className="h-6 w-6 text-primary" />
-              <div className="flex-1">
-                <p className="font-semibold text-primary">Account Verification Required</p>
-                <p className="text-sm text-primary/80">
-                  Please verify your account to unlock full platform capabilities.
-                </p>
-              </div>
-              <Button onClick={()=> navigate("/verify-email")} className="bg-primary text-primary-foreground hover:bg-primary/90">
-                Verify Account
+        {/* --- Verification Banner --- */}
+        {userData && !userData.isAccountVerified && (
+          <div className="flex items-center gap-4 rounded-lg border border-primary/30 bg-primary/5 p-4 text-primary-foreground">
+            <ShieldAlert className="h-6 w-6 text-primary" />
+            <div className="flex-1">
+              <p className="font-semibold text-primary">Account Verification Required</p>
+              <p className="text-sm text-primary/80">
+                Please verify your account to unlock full platform capabilities.
+              </p>
+            </div>
+
+            <Button
+              // disabled={handleVerifyAccount} 
+              onClick={sendVerificationOtp}  
+              className="bg-primary text-primary-foreground hover:bg-primary/90">
+              {isVerifying ? (
+                <span className="flex items-center gap-2">
+                  <Spinner className="h-4 w-4" />
+                  Sending...
+                </span>
+              ) : (
+                "Verify Account"
+              )}               
               </Button>
-            </div>                                                      
-          )}
+          </div>
+        )}
 
           {/* --- Main Dashboard Content Goes Here --- */}
           <h2 className="text-lg font-semibold">Overview</h2>
@@ -103,6 +123,7 @@ const CitizenDashboard = () => {
                 </p>
               </CardContent>
             </Card>
+            
             <Card className="transition-all hover:shadow-md hover:-translate-y-1">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Certificates Issued</CardTitle>

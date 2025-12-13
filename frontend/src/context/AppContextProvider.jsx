@@ -8,13 +8,12 @@ import { Spinner } from "@/components/ui/spinner";
 export const AppContextProvider = (props) => {
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  axios.defaults.withCredentials = true;
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-
-  axios.defaults.withCredentials = true;
 
   const getUserData = async () => {
     axios.defaults.withCredentials = true;
@@ -33,7 +32,6 @@ export const AppContextProvider = (props) => {
         setUserData(citizen.data.userData);
         return citizen.data.userData;
       }
-
       setUserData(null);
       return null;
     } catch {
@@ -41,7 +39,6 @@ export const AppContextProvider = (props) => {
       return null;
     }
   };
-
 
   const getAuthState = async () => {
     try {

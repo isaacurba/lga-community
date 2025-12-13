@@ -13,10 +13,9 @@ const ProtectedRoute = ({ allowedRoles }) => {
 
   if (!isLoggedIn) {
     if (!hasShownToast) {
-      toast.error("Please log in to continue.");
       setHasShownToast(true);
     }
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/unauthorised" replace />;
   }
 
   if (!userData) {

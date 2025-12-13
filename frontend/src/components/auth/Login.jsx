@@ -126,7 +126,7 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   type="password"
                   placeholder="••••••••"
-                  className="pl-10 h-12 bg-background/50"
+                   className="pl-10 h-12 bg-background/50"
                 />
               </div>
             </div>
