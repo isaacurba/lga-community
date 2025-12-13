@@ -9,17 +9,22 @@ import {
 import { AppContext } from "@/context/AppContext";
 import axios from "axios";
 import { ShieldCheck } from "lucide-react";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
+import {toast} from "sonner"
+import { useNavigate } from "react-router-dom";
+import { Spinner } from '@/components/ui/spinner';
 
 const EmailVerify = () => {
-  const inputRefs = useRef([])
-  const { backendUrl } = useContext(AppContext)
+  const inputRefs = useRef([]);
+  const { backendUrl, isLoggedIn, userData, getUserData, setIsLoggedIn } = useContext(AppContext);
+  const [ isLoading, setIsLoading ] = useState(false);
+  const navigate = useNavigate();
+
   const handleInput = (e, index)=> {
     if (e.target.value.length > 0 && index < inputRefs.current.length - 1){
       inputRefs.current[index + 1].focus()
     }
   }
-  
   const handleKeyDown = (e, index)=>{
     if (e.key === "Backspace" && e.target.value === "" && index > 0 ){
       inputRefs.current[index - 1].focus()
@@ -34,6 +39,29 @@ const EmailVerify = () => {
         inputRefs.current[index].value = char;
       }
     });
+  }
+
+  const onSubmitHandler = async (e)=> {
+    axios.defaults.withCredentials = true;
+    setIsLoading(true)
+    try {
+      e.preventDefault();
+      const otpArray = inputRefs.current.map(e => e.value);
+      const otp = otpArray.join("")
+      const {data} = await axios.post(`${backendUrl}/api/staff/auth/verify-account`, {otp})
+      if(data.success){
+        toast.success(data.message);
+        setIsLoggedIn(true);
+        await getUserData();
+        navigate("/staff/dashboard")
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }finally{
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -63,7 +91,9 @@ const EmailVerify = () => {
         </CardHeader>
 
         <CardContent>
-          <form className="space-y-6">
+          <form
+          onSubmit={onSubmitHandler}
+          className="space-y-6">
             <div className="space-y-2 ">
               <div className="flex gap-2 justify-center">
                 {Array(6).fill(0).map((_, index) => (
@@ -84,12 +114,23 @@ const EmailVerify = () => {
               </p>
             </div>
 
+            {isLoading ? (
+            <Button
+              disabled
+              className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+            >
+              <Spinner className="mr-2 h-4 w-4" />
+              Verifying...
+            </Button>
+            ):(
             <Button
               type="submit"
               className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
               Verify Email
-            </Button>
+            </Button>              
+            )}
+
           </form>
         </CardContent>
 
