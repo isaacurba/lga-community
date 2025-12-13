@@ -103,22 +103,17 @@ const StaffDashboard = () => {
                   </div>
 
                   {isverifying ? (
-                      <span
-                        className="bg-primary text-primary-foreground hover:bg-primary/90"
-                      >
-                        <Spinner className="mr-2 h-4 w-4" />
-                        Sending...
-                      </span>   
+                    <Button disabled className="bg-primary text-primary-foreground hover:bg-primary/90">
+                      <Spinner className="mr-2 h-4 w-4" />
+                      Sending...
+                    </Button>
                   ) : (
-                  <Button
-                    disabled={isverifying} 
-                    onClick={sendVerificationOtp}  
-                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    <Button
+                      onClick={sendVerificationOtp}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90"
                     >
-                      <span className="flex items-center gap-2">
-                        Verify Account
-                      </span>               
-                   </Button>
+                      Verify Account
+                    </Button>
                   )}
 
                 </div>

@@ -6,13 +6,36 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { AppContext } from "@/context/AppContext";
+import axios from "axios";
 import { ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useContext, useRef } from "react";
 
 const EmailVerify = () => {
-  // const [ otp, setOtp ] = useState("");
+  const inputRefs = useRef([])
+  const { backendUrl } = useContext(AppContext)
+  const handleInput = (e, index)=> {
+    if (e.target.value.length > 0 && index < inputRefs.current.length - 1){
+      inputRefs.current[index + 1].focus()
+    }
+  }
   
+  const handleKeyDown = (e, index)=>{
+    if (e.key === "Backspace" && e.target.value === "" && index > 0 ){
+      inputRefs.current[index - 1].focus()
+    }
+  }
+
+  const handlePaste = (e) => {
+    const paste = e.clipboardData.getData('text');
+    const pasteArray = paste.split("");
+    pasteArray.forEach((char, index) => {
+      if (inputRefs.current[index]) {
+        inputRefs.current[index].value = char;
+      }
+    });
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 py-12 relative overflow-hidden">
       
@@ -31,7 +54,7 @@ const EmailVerify = () => {
           </div>
           <div className="space-y-2">
             <CardTitle className="text-2xl font-bold tracking-tight">
-              Verify Your Account
+              Verify Your Email
             </CardTitle>
             <CardDescription className="text-base">
               Enter the 6-digit code sent to your email address.
@@ -39,17 +62,22 @@ const EmailVerify = () => {
           </div>
         </CardHeader>
 
-        <CardContent className="pt-6">
+        <CardContent>
           <form className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex justify-center">
-                <Input
-                  type="text"
-                  onChannge={(e)=>e.target.value}
-                  className="text-center text-2xl tracking-[0.5em] font-mono h-14 w-full max-w-[280px] bg-background/50 border-2 focus-visible:ring-offset-0 focus-visible:border-primary"              
-                  placeholder="000000"  
-                  maxLength={6}
-                />
+            <div className="space-y-2 ">
+              <div className="flex gap-2 justify-center">
+                {Array(6).fill(0).map((_, index) => (
+                  <input 
+                   type="text" 
+                   maxLength={1} 
+                   key={index} 
+                   required  
+                   ref={e => { if (e) inputRefs.current[index] = e; }}
+                   onInput={(e) => handleInput(e, index)}
+                   onKeyDown={(e)=> handleKeyDown(e, index)}
+                   onPaste={handlePaste}
+                   className="w-12 h-12 text-center text-xl rounded-md border border-solid"/>
+                ))}
               </div>
               <p className="text-xs text-center text-muted-foreground">
                 Please check your spam folder if you don't see the email.

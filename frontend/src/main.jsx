@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <AppContextProvider>
       <App />
     </AppContextProvider>
-     <Toaster richColors closeButton position="top-center" />
+     <Toaster richColors position="top-center" />
     </BrowserRouter>
   </React.StrictMode>,
 );
