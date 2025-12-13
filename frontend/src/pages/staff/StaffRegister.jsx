@@ -87,7 +87,7 @@ const StaffRegister = () => {
                   value={name}
                   onChange={e => setName(e.target.value)}
                   id="name"
-                  type="name"
+                  type="text"
                   placeholder="Isaac Urban"
                   className="pl-10 h-12 bg-background/50"
                   required

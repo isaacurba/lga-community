@@ -44,7 +44,6 @@ export const AppContextProvider = (props) => {
     try {
       const auth = await axios
         .post(`${backendUrl}/api/auth/is-auth`)
-        .catch(() => null);
 
       if (auth?.data?.success) {
         setIsLoggedIn(true);

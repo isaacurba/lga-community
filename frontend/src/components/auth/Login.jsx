@@ -49,7 +49,6 @@ const Login = () => {
         return toast.error("Invalid credentials.");
       }
       const user = response.data.user.role
-      console.log(user)
       setIsLoggedIn(true);
       setUserData(response.data.user);
 

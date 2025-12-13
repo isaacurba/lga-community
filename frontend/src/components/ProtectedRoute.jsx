@@ -15,7 +15,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
     if (!hasShownToast) {
       setHasShownToast(true);
     }
-    return <Navigate to="/unauthorised" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (!userData) {
@@ -37,4 +37,3 @@ const ProtectedRoute = ({ allowedRoles }) => {
 }
 
 export default ProtectedRoute;
-

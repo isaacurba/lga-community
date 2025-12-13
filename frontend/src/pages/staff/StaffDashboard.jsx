@@ -19,7 +19,6 @@ const StaffDashboard = () => {
   const [ isverifying, setIsVerifying ] = useState(false)
 
   const sendVerificationOtp = async () =>{
-    console.log("ancjidbv")
     setIsVerifying(true);
     try {
       axios.defaults.withCredentials = true;
