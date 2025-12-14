@@ -20,8 +20,6 @@ function App() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/staff/verify-email" element={<EmailVerify />} />
 
-
-
       <Route element={<ProtectedRoute allowedRoles={["staff"]} />}>
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
       </Route>

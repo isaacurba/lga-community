@@ -24,7 +24,7 @@ const StaffDashboard = () => {
       axios.defaults.withCredentials = true;
       const {data} = await axios.post(`${backendUrl}/api/staff/auth/send-verify-otp`)
       if (data.success){
-        navigate("/verify-email")
+        navigate("/staff/verify-email")
         toast.success(data.message)
       }else{
         toast.error(data.message)
@@ -36,7 +36,6 @@ const StaffDashboard = () => {
     }
   }
 
-  
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -48,6 +47,12 @@ const StaffDashboard = () => {
               Manage all operations from here.
             </p>
           </div>
+
+          {/* Temporary Debug View */}
+          <div className="bg-black text-white p-4 tex t-xs font-mono overflow-auto">
+            <pre>{JSON.stringify(userData, null, 2)}</pre>
+          </div>
+          
 
           <div className="flex items-center gap-4">
             <div className="relative">

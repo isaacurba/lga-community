@@ -9,14 +9,14 @@ import {
 import { AppContext } from "@/context/AppContext";
 import axios from "axios";
 import { ShieldCheck } from "lucide-react";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {toast} from "sonner"
 import { useNavigate } from "react-router-dom";
 import { Spinner } from '@/components/ui/spinner';
 
 const EmailVerify = () => {
   const inputRefs = useRef([]);
-  const { backendUrl, isLoggedIn, userData, getUserData, setIsLoggedIn } = useContext(AppContext);
+  const { backendUrl, isLoggedIn, userData, getUserData, setIsLoggedIn, isAppLoading } = useContext(AppContext);
   const [ isLoading, setIsLoading ] = useState(false);
   const navigate = useNavigate();
 
@@ -63,6 +63,16 @@ const EmailVerify = () => {
       setIsLoading(false)
     }
   }
+
+  useEffect(()=>{
+    if (isAppLoading) return;
+    
+    if (!isLoggedIn) {
+      navigate('/login');
+    } else if (userData && userData.isAccountVerified) {
+      navigate("/staff/dashboard");
+    }
+  }, [isLoggedIn, userData, isAppLoading, navigate])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 py-12 relative overflow-hidden">
