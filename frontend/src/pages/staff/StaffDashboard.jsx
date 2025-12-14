@@ -48,12 +48,6 @@ const StaffDashboard = () => {
             </p>
           </div>
 
-          {/* Temporary Debug View */}
-          <div className="bg-black text-white p-4 tex t-xs font-mono overflow-auto">
-            <pre>{JSON.stringify(userData, null, 2)}</pre>
-          </div>
-          
-
           <div className="flex items-center gap-4">
             <div className="relative">
               <Button variant="outline" size="icon" className="h-8 w-8">
@@ -96,7 +90,7 @@ const StaffDashboard = () => {
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
             
               {/* --- Verification Banner --- */}
-              {userData && !userData.isAccountVerified && (
+              {userData && userData.isAccountVerified === false && (
                 <div className="flex items-center gap-4 rounded-lg border border-primary/30 bg-primary/5 p-4 text-primary-foreground">
                   <ShieldAlert className="h-6 w-6 text-primary" />
                   <div className="flex-1">

@@ -15,30 +15,29 @@ export const AppContextProvider = (props) => {
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  const getUserData = async () => {
-    axios.defaults.withCredentials = true;
-    try {
-      const staff = await axios
-        .get(`${backendUrl}/api/staff/data`)
-        
-      if (staff?.data?.success) {
-        setUserData(staff.data.userData);
-      }
+const getUserData = async () => {
+  try {
+    const staff = await axios.get(`${backendUrl}/api/staff/data`);
 
-      const citizen = await axios
-        .get(`${backendUrl}/api/citizen/data`)
-
-      if (citizen?.data?.success) {
-        setUserData(citizen.data.userData);
-        return citizen.data.userData;
-      }
-      setUserData(null);
-      return null;
-    } catch {
-      setUserData(null);
-      return null;
+    if (staff?.data?.success) {
+      setUserData(staff.data.staffData); 
+      return staff.data.staffData;
     }
-  };
+
+    const citizen = await axios.get(`${backendUrl}/api/citizen/data`);
+
+    if (citizen?.data?.success) {
+      setUserData(citizen.data.citizenData); 
+      return citizen.data.citizenData;
+    }
+
+    setUserData(null);
+    return null;
+  } catch {
+    setUserData(null);
+    return null;
+  }
+};
 
   const getAuthState = async () => {
     try {
