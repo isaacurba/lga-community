@@ -18,7 +18,7 @@ function App() {
       <Route path="/staff/register" element={<StaffRegister />} />
       <Route path="/unauthorised" element={<Unauthorised />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/verify-email" element={<EmailVerify />} />
+      <Route path="/staff/verify-email" element={<EmailVerify />} />
 
 
 
