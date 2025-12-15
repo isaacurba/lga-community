@@ -1,39 +1,37 @@
-import { AppContext } from '@/context/AppContext'
-import { useContext,  useState } from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
-import { toast } from 'sonner'
+import { AppContext } from "@/context/AppContext";
+import { useContext, useEffect } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { isLoggedIn, isAppLoading, userData } = useContext(AppContext);
-  const [hasShownToast, setHasShownToast] = useState(false);
-  
-  if (isAppLoading) {
-    return null; 
-  }
+  const location = useLocation();
 
-  if (!isLoggedIn) {
-    if (!hasShownToast) {
-      setHasShownToast(true);
+  useEffect(() => {
+    if (!isAppLoading) {
+      if (!isLoggedIn) {
+        toast.error("Please log in to continue");
+      } else if (
+        allowedRoles &&
+        userData &&
+        !allowedRoles.includes(userData.role)
+      ) {
+        toast.error("You are not authorized to access this page.");
+      }
     }
+  }, [isLoggedIn, isAppLoading, userData, allowedRoles, location.pathname]);
+
+  if (isAppLoading) return null;
+
+  if (!isLoggedIn || !userData) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!userData) {
-    return <Navigate to="/login" replace />;
-  }
-
-  const userRole = userData?.role;
-
-  if (allowedRoles && !allowedRoles.includes(userRole)) {
-    if (!hasShownToast) {
-      toast.error("You are not authorized to access this page.");
-      setHasShownToast(true);
-    }
-
+  if (allowedRoles && !allowedRoles.includes(userData.role)) {
     return <Navigate to="/unauthorised" replace />;
   }
 
   return <Outlet />;
-}
+};
 
 export default ProtectedRoute;
