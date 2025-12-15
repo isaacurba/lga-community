@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import StaffHome from './pages/Home';
-import Login from './components/auth/Login';
-import EmailVerify from './components/auth/EmailVerify';
-import ResetPassword from './components/auth/ResetPassword';
+import Login from './pages/auth/Login';
+import EmailVerify from './pages/staff/EmailVerify';
+import ResetPassword from './pages/auth/ResetPassword';
 import StaffRegister from "./pages/staff/StaffRegister";
 import StaffDashboard from "./pages/staff/StaffDashboard";
 import CitizenDashboard from "./pages/citizen/CitizenDashboard";
