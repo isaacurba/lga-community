@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, Users, Building2, ArrowRight } from "lucide-react";
+import Documentation from "@/components/Documentation"; 
 
 const features = [
   {
@@ -22,7 +24,10 @@ const features = [
     colorClasses: "bg-purple-100 text-purple-600",
   },
 ];
+
 const Header = () => {
+  const [showDoc, setShowDoc] = useState(false);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
 
@@ -37,26 +42,32 @@ const Header = () => {
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             A secure, centralized platform for verifying citizen records, managing enrollments, and ensuring transparent local governance.
-          </p>          
+          </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
 
-            <Link to="/login"> 
-              <Button size="lg" variant="outline" className="h-12 px-8 text-base">
-                View our Docs
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+            {/* Documentation Button (Opens Modal) */}
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="h-12 px-8 text-base gap-2"
+              onClick={() => setShowDoc(true)}
+            >
+              View our Docs
+              <ArrowRight className="w-4 h-4" />
+            </Button>
 
+            {/* Login Button */}
             <Link to="/login">
-                <Button size="lg" className="bg-primary text-primary-foreground">
-                 Login to your Portal
+                <Button size="lg" className="bg-primary text-primary-foreground h-12 px-8 text-base">
+                  Login to your Portal
                 </Button>
             </Link>
   
           </div>
         </div>
 
+        {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-24 px-4">
           {features.map((feature) => (
             <div key={feature.title} className="flex flex-col items-center p-6 bg-card rounded-xl shadow-sm border">
@@ -70,10 +81,12 @@ const Header = () => {
         </div>
       </main>
 
-
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
         <p>&copy; 2025 LGA-Connect. Secured & Official.</p>
       </footer>
+
+      {/* Render the Documentation Modal */}
+      <Documentation isOpen={showDoc} onClose={() => setShowDoc(false)} />
     </div>
   );
 };

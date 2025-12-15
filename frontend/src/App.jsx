@@ -8,6 +8,7 @@ import StaffDashboard from "./pages/staff/StaffDashboard";
 import CitizenDashboard from "./pages/citizen/CitizenDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorised from "./components/Unauthorised";
+import Documentation from "./components/Documentation";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/unauthorised" element={<Unauthorised />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/staff/verify-email" element={<EmailVerify />} />
+      <Route path="/documentation" element={<Documentation />} />
 
       <Route element={<ProtectedRoute allowedRoles={["staff"]} />}>
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
