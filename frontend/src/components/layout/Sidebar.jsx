@@ -16,14 +16,14 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex-1 px-4 py-6 space-y-2">
-        <NavLink to="/" className={linkClass}>
-          <Home className="h-4 w-4" />
-          Dashboard
-        </NavLink>
-
         {/* STAFF LINKS */}
         {userData?.role === "staff" && (
           <>
+            <NavLink to="/staff/dashboard" className={linkClass}>
+              <Home className="h-4 w-4" />
+              Dashboard
+            </NavLink>         
+
             <NavLink to="/staff/citizens" className={linkClass}>
               <Users className="h-4 w-4" />
               Citizens
@@ -39,6 +39,11 @@ const Sidebar = () => {
         {/* CITIZEN LINKS */}
         {userData?.role === "citizen" && (
           <>
+            <NavLink to="/citizen/dashboard" className={linkClass}>
+              <Home className="h-4 w-4" />
+              Dashboard
+            </NavLink> 
+
             <NavLink to="/citizen/certificates" className={linkClass}>
               <FileText className="h-4 w-4" />
               My Certificates
