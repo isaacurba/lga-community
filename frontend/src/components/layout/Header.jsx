@@ -27,7 +27,7 @@ const Header = () => {
           <Bell className="h-4 w-4" />
         </Button>
 
-        <Button onClick={logout} variant="outline" size="sm">
+        <Button onClick={logout} variant="outline" size="sm" className="cursor-pointer">
           {isAuthLoading ? (
             <>
               <Spinner className="mr-2 h-4 w-4" />

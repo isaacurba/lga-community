@@ -22,20 +22,20 @@ const StaffCitizens = () => {
         {/* --- Header Section --- */}
         <header className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Button
+            {/* <Button
               variant="outline"
               size="icon"
               onClick={() => navigate('/staff/dashboard')}
             >
               <ArrowLeft className="h-4 w-4" />
-            </Button>
+            </Button> */}
+
             <h1 className="text-xl font-semibold">Citizen Management</h1>
           </div>
 
           <Button
             onClick={() => navigate('/staff/register-citizen')}
-            className="gap-2 shadow-sm"
-          >
+            className="text-base font-semibold shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300">
             <UserPlus className="h-4 w-4" />
             Register New Citizen
           </Button>
@@ -74,6 +74,7 @@ const StaffCitizens = () => {
               <Button
                 variant="outline"
                 onClick={() => navigate('/staff/register-citizen')}
+                className="cursor-pointer"
               >
                 Register Now
               </Button>
