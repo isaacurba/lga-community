@@ -9,7 +9,7 @@ import CitizenDashboard from "./pages/citizen/CitizenDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorised from "./components/Unauthorised";
 import StaffCitizens from "./pages/staff/StaffCitizens";
-// import CitizenRegister from "./pages/staff/CitizenRegister.jsx"; 
+import RegisterCitizen from "./pages/staff/RegisterCitizen"; 
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
         <Route path="/verify-email" element={<EmailVerify />} />
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
         <Route path="/staff/citizens" element={<StaffCitizens />} />
-        {/* <Route path="/staff/register-citizen" element={<CitizenRegister />} /> */}
+        <Route path="/staff/register-citizen" element={<RegisterCitizen />} />
       </Route>
 
       {/* Protected Citizen Routes */}
