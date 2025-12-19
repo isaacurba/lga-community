@@ -35,6 +35,22 @@ export const getStaffData = async (req, res) => {
   }
 };
 
+// --- NEW FUNCTION: Get All Citizens ---
+export const getAllCitizens = async (req, res) => {
+    try {
+        // Fetch all documents from the Citizen collection
+        // sort({ createdAt: -1 }) puts the newest registrations first
+        const citizens = await citizenModel.find({}).sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            citizens
+        });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
 export const getCitizenData = async (req, res) => {
   try {
     const userId = req.userId;
