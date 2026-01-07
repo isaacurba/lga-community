@@ -29,8 +29,8 @@ const Header = () => {
         
         <div className="flex items-center gap-2">
           <div className="hidden flex-col items-end md:flex">
-            <span className="text-sm font-medium">{userData?.name || "User"}</span>
-            <span className="text-xs text-muted-foreground capitalize">{userData?.role}</span>
+              <span className="text-sm font-medium">{userData?.name || userData?.lastName ? `${userData?.name || ''} ${userData?.lastName || ''}`.trim() : "User"}</span>
+              <span className="text-xs text-muted-foreground capitalize">{userData?.role}</span>
           </div>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
             <User className="h-4 w-4 text-primary" />
