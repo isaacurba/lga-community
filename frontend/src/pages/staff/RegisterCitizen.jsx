@@ -15,21 +15,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
-import { UserPlus, ArrowLeft, Loader2 } from "lucide-react";
+import { UserPlus, ArrowLeft, Loader2, Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { nigeriaLGAs } from "@/lib/nigeria-lgas";
 
 const RegisterCitizen = () => {
   const navigate = useNavigate();
   const { backendUrl } = useContext(AppContext);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     ninId: "",
     email: "",
     password: "",
-    originalLga: "",    
+    originalLga: "",
     dob: "",
     currentAddress: "",
   });
@@ -193,11 +198,52 @@ const RegisterCitizen = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>LGA of Origin *</Label>
-                    <Input
-                      name="originalLga"
-                      value={formData.originalLga}
-                      onChange={handleChange}
-                    />
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={open}
+                          className="w-full justify-between"
+                        >
+                          {formData.originalLga
+                            ? nigeriaLGAs.find((lga) => lga === formData.originalLga)
+                            : "Select LGA..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Search LGA..." />
+                          <CommandList>
+                            <CommandEmpty>No LGA found.</CommandEmpty>
+                            <CommandGroup>
+                              {nigeriaLGAs.map((lga) => (
+                                <CommandItem
+                                  key={lga}
+                                  value={lga}
+                                  onSelect={(currentValue) => {
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      originalLga: currentValue === formData.originalLga ? "" : currentValue,
+                                    }));
+                                    setOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      formData.originalLga === lga ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {lga}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div className="space-y-2">
