@@ -72,7 +72,7 @@ export const getCitizenData = async (req, res) => {
       success: true,
       citizenData: {
         ninId: user.ninId,
-        firstName: user.firstName,
+        name: user.firstName,
         lastName: user.lastName,
         isAccountVerified: user.isAccountVerified,
         role: "citizen",
