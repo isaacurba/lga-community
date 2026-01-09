@@ -314,7 +314,6 @@ export const citizenResetOtp = async (req, res) => {
 
     user.sendResetOtp = otp;
     user.resetOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
-    user.isAccountVerified = true;
 
     await user.save();
 
