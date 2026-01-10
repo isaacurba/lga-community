@@ -80,7 +80,7 @@ export const registerCitizen = async (req, res) => {
       dob,
       currentAddress,
       originalLga,
-      isAccountVerified: true,
+      isAccountVerified: false,
     });
     await newCitizen.save();
 
@@ -495,9 +495,189 @@ export const citizenResetPassword = async (req, res) => {
 };
 
 
+// send verification OTP to citizen email
+export const sendVerifyOtp = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await citizenModel.findById(userId);
+    console.log(userId);
+
+    if (user.isAccountVerified) {
+      return res.json({ success: false, message: "Account already verified" });
+    }
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+    user.verifyOtp = otp;
+    user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
+
+    await user.save();
+
+    // Professional HTML email template for OTP verification
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verify Your Account</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f7;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f4f4f7; padding: 20px 0;">
+          <tr>
+            <td align="center">
+              <table cellpadding="0" cellspacing="0" border="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <!-- Header -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">LGA-Connect</h1>
+                    <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 16px; opacity: 0.9;">Account Verification</p>
+                  </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <h2 style="margin: 0 0 20px 0; color: #333333; font-size: 24px;">Verify Your Account</h2>
+
+                    <p style="margin: 0 0 20px 0; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Dear ${user.firstName} ${user.lastName},
+                    </p>
+
+                    <p style="margin: 0 0 30px 0; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Thank you for registering with LGA-Connect. Please use the One-Time Password (OTP) below to verify your account:
+                    </p>
+
+                    <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 30px; text-align: center; margin: 30px 0; border-radius: 8px; border: 2px solid #667eea;">
+                      <p style="margin: 0 0 10px 0; color: #666666; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
+                      <span style="font-size: 42px; letter-spacing: 12px; font-weight: bold; color: #667eea; font-family: 'Courier New', monospace;">${otp}</span>
+                    </div>
+
+                    <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                      <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
+                        <strong>⏰ Time-Sensitive:</strong> This OTP will expire in 24 hours. Please verify your account promptly.
+                      </p>
+                    </div>
+
+                    <p style="margin: 20px 0 0 0; color: #999999; font-size: 13px; line-height: 1.6; font-style: italic;">
+                      If you didn't create an account with LGA-Connect, please ignore this email or contact our support team if you have concerns about unauthorized access.
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-radius: 0 0 8px 8px;">
+                    <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
+                      This is an automated message from LGA-Connect Portal.
+                    </p>
+                    <p style="margin: 0; color: #999999; font-size: 12px;">
+                      © ${new Date().getFullYear()} LGA-Connect. All rights reserved.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const textContent = `
+ACCOUNT VERIFICATION - LGA-Connect
+
+Dear ${user.firstName} ${user.lastName},
+
+Thank you for registering with LGA-Connect. Please use the One-Time Password (OTP) below to verify your account:
+
+YOUR VERIFICATION CODE
+======================
+${otp}
+
+⏰ TIME-SENSITIVE: This OTP will expire in 24 hours. Please verify your account promptly.
+
+If you didn't create an account with LGA-Connect, please ignore this email or contact our support team if you have concerns about unauthorized access.
+
+---
+This is an automated message from LGA-Connect Portal.
+© ${new Date().getFullYear()} LGA-Connect. All rights reserved.
+    `.trim();
+
+    const mailOptions = {
+      from: {
+        name: "LGA-Connect",
+        address: process.env.SENDER_EMAIL,
+      },
+      to: user.email,
+      subject: "🔐 Verify Your LGA-Connect Account",
+      text: textContent,
+      html: htmlContent,
+      priority: "high",
+      headers: {
+        "X-Priority": "1",
+        "X-MSMail-Priority": "High",
+        Importance: "high",
+      },
+    };
+
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log(
+        `✅ Verification OTP sent to ${user.email} (MessageId: ${info.messageId})`
+      );
+    } catch (emailError) {
+      console.error(
+        `❌ Failed to send verification OTP to ${user.email}:`,
+        emailError.message
+      );
+      return res.json({
+        success: false,
+        message: "Failed to send verification email. Please try again.",
+      });
+    }
+    return res.json({
+      success: true,
+      message: "Verification OTP sent on Email",
+    });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  const { otp } = req.body;
+  const userId = req.userId;
+  if (!userId || !otp) {
+    return res.json({ success: false, message: "Missing Details" });
+  }
+  try {
+    const user = await citizenModel.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+    if (user.verifyOtp === "" || user.verifyOtp !== otp) {
+      return res.json({ success: false, message: "Invalid otp" });
+    }
+    if (user.verifyOtpExpireAt < Date.now()) {
+      return res.json({ success: false, message: "OTP Expired" });
+    }
+    user.isAccountVerified = true;
+    user.verifyOtp = "";
+    user.verifyOtpExpireAt = 0;
+
+    await user.save();
+
+    return res.json({ success: true, message: "Email Verified Successfully" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
 export const citizenFunctions = {
   registerCitizen,
   citizenLogin,
+  sendVerifyOtp,
+  verifyEmail,
   citizenResetOtp,
   citizenResetPassword,
   isAuthenticated

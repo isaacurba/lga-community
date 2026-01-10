@@ -51,6 +51,14 @@ const citizenSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verifyOtp: {
+      type: String,
+      default: "",
+    },
+    verifyOtpExpireAt: {
+      type: Number,
+      default: 0,
+    },
     sendResetOtp: {
       type: String,
       default: "",
