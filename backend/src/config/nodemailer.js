@@ -3,12 +3,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.sendgrid.net",
+  service: "gmail",
+  host: "smtp.gmail.com",
   port: 587,
   secure: false, // upgrade later with STARTTLS
   auth: {
-    user: "apikey",
-    pass: process.env.SENDGRID_API_KEY,
+    user: process.env.SENDER_EMAIL,
+    pass: process.env.APP_PASSWORD,
   },
 });
 
