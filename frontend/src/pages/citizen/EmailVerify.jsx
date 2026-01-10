@@ -10,27 +10,26 @@ import { AppContext } from "@/context/AppContext";
 import axios from "axios";
 import { ShieldCheck } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import {toast} from "sonner"
 import { useNavigate } from "react-router-dom";
 import { Spinner } from '@/components/ui/spinner';
 
 const EmailVerify = () => {
   const inputRefs = useRef([]);
   const { backendUrl, isLoggedIn, userData, getUserData, setIsLoggedIn, isAppLoading } = useContext(AppContext);
-  const [isLoading, setIsLoading] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(false);
   const navigate = useNavigate();
 
-  const handleInput = (e, index) => {
-    if (e.target.value.length > 0 && index < inputRefs.current.length - 1) {
-      inputRefs.current[index + 1].focus();
+  const handleInput = (e, index)=> {
+    if (e.target.value.length > 0 && index < inputRefs.current.length - 1){
+      inputRefs.current[index + 1].focus()
     }
-  };
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && e.target.value === "" && index > 0) {
-      inputRefs.current[index - 1].focus();
+  }
+  const handleKeyDown = (e, index)=>{
+    if (e.key === "Backspace" && e.target.value === "" && index > 0 ){
+      inputRefs.current[index - 1].focus()
     }
-  };
+  }
 
   const handlePaste = (e) => {
     const paste = e.clipboardData.getData('text');
@@ -40,55 +39,44 @@ const EmailVerify = () => {
         inputRefs.current[index].value = char;
       }
     });
-  };
+  }
 
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const onSubmitHandler = async (e)=> {
     axios.defaults.withCredentials = true;
-
+    setIsLoading(true)
     try {
+      e.preventDefault();
       const otpArray = inputRefs.current.map(e => e.value);
-      const otp = otpArray.join("");
-
-      const isStaff = userData?.role === 'staff' || userData?.role === 'citizen';
-      const endpoint = isStaff 
-        ? `${backendUrl}/api/staff/auth/verify-account`
-        : `${backendUrl}/api/citizen/auth/verify-account`; // Ensure this route exists on backend!
-
-      const { data } = await axios.post(endpoint, { otp });
-
-      if (data.success) {
+      const otp = otpArray.join("")
+      const {data} = await axios.post(`${backendUrl}/api/citizen/auth/verify-account`, {otp})
+      if(data.success){
         toast.success(data.message);
         setIsLoggedIn(true);
         await getUserData();
-        
-        // --- LOGIC FIX: Determine Redirect based on Role ---
-        navigate(isStaff ? "/staff/dashboard" : "/citizen/dashboard");
-      } else {
-        toast.error(data.message);
+        navigate("/citizen/dashboard")
+      }else{
+        toast.error(data.message)
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message);
-    } finally {
-      setIsLoading(false);
+      toast.error(error.message)
+    }finally{
+      setIsLoading(false)
     }
-  };
+  }
 
-  useEffect(() => {
+  useEffect(()=>{
     if (isAppLoading) return;
 
     if (!isLoggedIn) {
       navigate('/login');
     } else if (userData && userData.isAccountVerified) {
-      // --- LOGIC FIX: Smart Redirect if already verified ---
-      const isStaff = userData?.role === 'staff' || userData?.role === 'admin';
-      navigate(isStaff ? "/staff/dashboard" : "/citizen/dashboard");
+      navigate("/citizen/dashboard");
     }
-  }, [isLoggedIn, userData, isAppLoading, navigate]);
+  }, [isLoggedIn, userData, isAppLoading, navigate])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 py-12 relative overflow-hidden">
+
       {/* Background Decoration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-10 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
@@ -104,7 +92,7 @@ const EmailVerify = () => {
           </div>
           <div className="space-y-2">
             <CardTitle className="text-2xl font-bold tracking-tight">
-              Verify Your Account
+              Verify Your Email
             </CardTitle>
             <CardDescription className="text-base">
               Enter the 6-digit code sent to your email address.
@@ -113,21 +101,22 @@ const EmailVerify = () => {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={onSubmitHandler} className="space-y-6">
-            <div className="space-y-2">
+          <form
+          onSubmit={onSubmitHandler}
+          className="space-y-6">
+            <div className="space-y-2 ">
               <div className="flex gap-2 justify-center">
                 {Array(6).fill(0).map((_, index) => (
                   <input
-                    type="text"
-                    maxLength={1}
-                    key={index}
-                    required
-                    ref={e => { if (e) inputRefs.current[index] = e; }}
-                    onInput={(e) => handleInput(e, index)}
-                    onKeyDown={(e) => handleKeyDown(e, index)}
-                    onPaste={handlePaste}
-                    className="w-12 h-12 text-center text-xl rounded-md border border-solid"
-                  />
+                   type="text"
+                   maxLength={1}
+                   key={index}
+                   required
+                   ref={e => { if (e) inputRefs.current[index] = e; }}
+                   onInput={(e) => handleInput(e, index)}
+                   onKeyDown={(e)=> handleKeyDown(e, index)}
+                   onPaste={handlePaste}
+                   className="w-12 h-12 text-center text-xl rounded-md border border-solid"/>
                 ))}
               </div>
               <p className="text-xs text-center text-muted-foreground">
@@ -135,22 +124,26 @@ const EmailVerify = () => {
               </p>
             </div>
 
+            {isLoading ? (
             <Button
-              type="submit"
-              disabled={isLoading}
+              disabled
               className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
-              {isLoading ? (
-                <>
-                  <Spinner className="mr-2 h-4 w-4" />
-                  Verifying...
-                </>
-              ) : (
-                "Verify Email"
-              )}
+              <Spinner className="mr-2 h-4 w-4" />
+              Verifying...
             </Button>
+            ):(
+            <Button
+              type="submit"
+              className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+            >
+              Verify Email
+            </Button>
+            )}
+
           </form>
         </CardContent>
+
       </Card>
     </div>
   );
