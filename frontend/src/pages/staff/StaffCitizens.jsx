@@ -106,34 +106,36 @@ const StaffCitizens = () => {
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
                 ) : filteredCitizens.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>NIN ID</TableHead>
-                        <TableHead>Full Name</TableHead>
-                        <TableHead>LGA Origin</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredCitizens.map((citizen) => (
-                        <TableRow key={citizen._id}>
-                          <TableCell className="font-medium">{citizen.ninId}</TableCell>
-                          <TableCell>{citizen.firstName} {citizen.lastName}</TableCell>
-                          <TableCell>{citizen.originalLga}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs ${citizen.isVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                              {citizen.isAccountVerified ? 'Verified' : 'Pending'}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="sm">View</Button>
-                          </TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>NIN ID</TableHead>
+                          <TableHead>Full Name</TableHead>
+                          <TableHead>LGA Origin</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Action</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredCitizens.map((citizen) => (
+                          <TableRow key={citizen._id}>
+                            <TableCell className="font-medium">{citizen.ninId}</TableCell>
+                            <TableCell>{citizen.firstName} {citizen.lastName}</TableCell>
+                            <TableCell>{citizen.originalLga}</TableCell>
+                            <TableCell>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${citizen.isAccountVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                {citizen.isAccountVerified ? 'Verified' : 'Pending'}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button variant="ghost" size="sm" className="hover:bg-black text-black hover:text-white">View</Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed rounded-lg bg-muted/10">
                     <div className="bg-background p-4 rounded-full mb-3 shadow-sm">
