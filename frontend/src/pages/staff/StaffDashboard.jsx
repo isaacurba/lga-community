@@ -4,7 +4,7 @@ import { Users, FileText, Building, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { AppContext } from "@/context/AppContext";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 const StaffDashboard = () => {
   const { userData, backendUrl } = useContext(AppContext);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [citizens, setCitizens] = useState([]);
   const navigate = useNavigate();
 
   const sendVerificationOtp = async () => {
@@ -36,6 +37,28 @@ const StaffDashboard = () => {
     }
   };
 
+    useEffect(() => {
+      const fetchCitizens = async () => {
+        try {
+          const { data } = await axios.get(
+            `${backendUrl}/api/staff/citizens`, 
+            { withCredentials: true }
+          );
+          
+          if (data.success) {
+            setCitizens(data.citizens);
+          } else {
+            toast.error(data.message || "Failed to load citizens");
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error("Error connecting to server");
+        }
+      };
+  
+      fetchCitizens();
+    }, [backendUrl]);
+
   return (
     <DashboardLayout>
       {userData?.isAccountVerified === false && (
@@ -48,22 +71,22 @@ const StaffDashboard = () => {
             </p>
           </div>
 
-          <Button onClick={sendVerificationOtp} disabled={isVerifying}>
+          <Button onClick={sendVerificationOtp} disabled={isVerifying} className="bg-black">
             {isVerifying ? <Spinner className="h-4 w-4" /> : "Verify Account"}
-          </Button>
+          </Button>                                                
         </div>
       )}
 
       <h2 className="mb-4 text-lg font-semibold">Overview</h2>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
+        <Card className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => navigate('/staff/citizens')}>
           <CardHeader className="flex justify-between flex-row pb-2">
             <CardTitle className="text-sm">Total Citizens</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,254</div>
+            <div className="text-2xl font-bold">{citizens.length}</div>
             <p className="text-xs text-muted-foreground">+122 this month</p>
           </CardContent>
         </Card>
@@ -79,7 +102,7 @@ const StaffDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className="flex justify-between flex-row pb-2">
             <CardTitle className="text-sm">Active Staff</CardTitle>
             <Building className="h-4 w-4 text-muted-foreground" />
@@ -88,7 +111,7 @@ const StaffDashboard = () => {
             <div className="text-2xl font-bold">57</div>
             <p className="text-xs text-muted-foreground">+2 since last hour</p>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </DashboardLayout>
   );
