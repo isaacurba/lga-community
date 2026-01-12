@@ -17,7 +17,10 @@ const Header = () => {
     <header className="flex h-14 items-center justify-between border-b bg-background px-4 lg:px-6">
       <div className="flex items-center gap-4">
         {/* Mobile menu trigger could go here later */}
-        <h1 className="text-lg font-semibold md:text-xl">
+        <h1 
+          className="text-lg font-semibold md:text-xl cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => navigate(userData?.role === 'staff' ? '/staff/dashboard' : '/citizen/dashboard')}
+        >
           {userData?.role === "staff" ? "Staff Portal" : "Citizen Portal"}
         </h1>
       </div>
