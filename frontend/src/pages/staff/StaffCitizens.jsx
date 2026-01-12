@@ -1,7 +1,5 @@
-import { useEffect, useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { AppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { UserPlus, Users, Search, ArrowLeft, Loader2 } from 'lucide-react';
@@ -14,40 +12,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from 'sonner';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import useCitizens from "@/hooks/useCitizens";
 
 const StaffCitizens = () => {
   const navigate = useNavigate();
-  const { backendUrl } = useContext(AppContext);
-  
-  const [citizens, setCitizens] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    const fetchCitizens = async () => {
-      try {
-        const { data } = await axios.get(
-          `${backendUrl}/api/staff/citizens`, 
-          { withCredentials: true }
-        );
-        
-        if (data.success) {
-          setCitizens(data.citizens);
-        } else {
-          toast.error(data.message || "Failed to load citizens");
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error("Error connecting to server");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCitizens();
-  }, [backendUrl]);
+  const { citizens, loading } = useCitizens();
 
   // Filter logic for search
   const filteredCitizens = citizens.filter(citizen => 

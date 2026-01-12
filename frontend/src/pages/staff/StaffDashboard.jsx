@@ -4,16 +4,17 @@ import { Users, FileText, Building, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { AppContext } from "@/context/AppContext";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import useCitizens from "@/hooks/useCitizens";
 
 const StaffDashboard = () => {
   const { userData, backendUrl } = useContext(AppContext);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [citizens, setCitizens] = useState([]);
   const navigate = useNavigate();
+  const { citizens } = useCitizens();
 
   const sendVerificationOtp = async () => {
     setIsVerifying(true);
@@ -36,28 +37,6 @@ const StaffDashboard = () => {
       setIsVerifying(false);
     }
   };
-
-    useEffect(() => {
-      const fetchCitizens = async () => {
-        try {
-          const { data } = await axios.get(
-            `${backendUrl}/api/staff/citizens`, 
-            { withCredentials: true }
-          );
-          
-          if (data.success) {
-            setCitizens(data.citizens);
-          } else {
-            toast.error(data.message || "Failed to load citizens");
-          }
-        } catch (error) {
-          console.log(error);
-          toast.error("Error connecting to server");
-        }
-      };
-  
-      fetchCitizens();
-    }, [backendUrl]);
 
   return (
     <DashboardLayout>
