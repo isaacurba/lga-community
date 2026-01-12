@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { UserPlus, Users, Search, ArrowLeft, Loader2 } from 'lucide-react';
+import { UserPlus, Users, Search, ArrowLeft, Loader2, X, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -12,19 +12,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import useCitizens from '@/hooks/useCitizens';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import useCitizens from "@/hooks/useCitizens";
 
 const StaffCitizens = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const { citizens, loading } = useCitizens();
+  // --- NEW: State for the Selected Citizen (to show in Modal) ---
+  const [selectedCitizen, setSelectedCitizen] = useState(null);
 
   // Filter logic for search
   const filteredCitizens = citizens.filter(citizen => 
-    citizen.firstName.toLowerCase().includes(search.toLowerCase()) ||
-    citizen.lastName.toLowerCase().includes(search.toLowerCase()) ||
-    citizen.ninId.includes(search)
+    citizen.firstName?.toLowerCase().includes(search.toLowerCase()) ||
+    citizen.lastName?.toLowerCase().includes(search.toLowerCase()) ||
+    citizen.ninId?.includes(search)
   );
 
   return (
@@ -40,7 +49,7 @@ const StaffCitizens = () => {
               </Button>
               <h1 className="text-xl font-semibold">Citizen Management</h1>
             </div>
-            <Button onClick={() => navigate('/staff/register-citizen')} className="gap-2 shadow-sm bg-black">
+            <Button onClick={() => navigate('/staff/register-citizen')} className="gap-2 shadow-sm">
               <UserPlus className="h-4 w-4" />
               Register New Citizen
             </Button>
@@ -77,36 +86,42 @@ const StaffCitizens = () => {
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
                 ) : filteredCitizens.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>NIN ID</TableHead>
-                          <TableHead>Full Name</TableHead>
-                          <TableHead>LGA Origin</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Action</TableHead>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>NIN ID</TableHead>
+                        <TableHead>Full Name</TableHead>
+                        <TableHead>LGA Origin</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredCitizens.map((citizen) => (
+                        <TableRow key={citizen._id}>
+                          <TableCell className="font-medium">{citizen.ninId}</TableCell>
+                          <TableCell>{citizen.firstName} {citizen.lastName}</TableCell>
+                          <TableCell>{citizen.originalLga}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${citizen.isAccountVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                              {citizen.isAccountVerified ? 'Verified' : 'Pending'}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right ">
+                            {/* --- UPDATED BUTTON: Opens the Modal --- */}
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="hover:bg-black hover:text-white cursor-pointer"
+                              onClick={() => setSelectedCitizen(citizen)}
+                            >
+                              View
+                            </Button>
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredCitizens.map((citizen) => (
-                          <TableRow key={citizen._id}>
-                            <TableCell className="font-medium">{citizen.ninId}</TableCell>
-                            <TableCell>{citizen.firstName} {citizen.lastName}</TableCell>
-                            <TableCell>{citizen.originalLga}</TableCell>
-                            <TableCell>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${citizen.isAccountVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                {citizen.isAccountVerified ? 'Verified' : 'Pending'}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button variant="ghost" size="sm" className="hover:bg-black text-black hover:text-white">View</Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+                      ))}
+                    </TableBody>
+                  </Table>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed rounded-lg bg-muted/10">
                     <div className="bg-background p-4 rounded-full mb-3 shadow-sm">
@@ -128,6 +143,71 @@ const StaffCitizens = () => {
             </Card>
           </main>
         </div>
+
+        {/* --- CITIZEN DETAILS MODAL (Dialog) --- */}
+        <Dialog open={!!selectedCitizen} onOpenChange={() => setSelectedCitizen(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Citizen Profile</DialogTitle>
+              <DialogDescription>
+                Full details for {selectedCitizen?.firstName} {selectedCitizen?.lastName}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {selectedCitizen && (
+              <div className="space-y-4 py-2">
+                
+                {/* Header Info */}
+                <div className="flex items-center gap-4 bg-muted/30 p-3 rounded-lg">
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <User className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg">{selectedCitizen.firstName} {selectedCitizen.lastName}</h4>
+                    <p className="text-sm text-muted-foreground">NIN: {selectedCitizen.ninId}</p>
+                  </div>
+                  <div className={`ml-auto text-xs px-2 py-1 rounded-full ${selectedCitizen.isVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    {selectedCitizen.isVerified ? 'Verified' : 'Pending'}
+                  </div>
+                </div>
+
+                {/* Detail Grid */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs uppercase">Email Address</span>
+                    <p className="font-medium">{selectedCitizen.email}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs uppercase">Origin LGA</span>
+                    <p className="font-medium">{selectedCitizen.originalLga}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs uppercase">Date of Birth</span>
+                    <p className="font-medium">
+                      {selectedCitizen.dob ? new Date(selectedCitizen.dob).toLocaleDateString() : 'N/A'}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs uppercase">Gender</span>
+                    <p className="font-medium">{selectedCitizen.gender || 'Not specified'}</p>
+                  </div>
+                  <div className="col-span-2 space-y-1">
+                    <span className="text-muted-foreground text-xs uppercase">Current Address</span>
+                    <p className="font-medium">{selectedCitizen.currentAddress || 'N/A'}</p>
+                  </div>
+                </div>
+
+                {/* Action Footer within Modal */}
+                <div className="flex justify-end pt-2">
+                  <Button variant="outline" onClick={() => setSelectedCitizen(null)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
       </div>
     </DashboardLayout>
   );
