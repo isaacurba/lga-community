@@ -7,6 +7,7 @@ import ResetPassword from './pages/auth/ResetPassword';
 import StaffRegister from "./pages/staff/StaffRegister";
 import StaffDashboard from "./pages/staff/StaffDashboard";
 import CitizenDashboard from "./pages/citizen/CitizenDashboard";
+import CitizenProfile from "./pages/citizen/citizenProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorised from "./components/Unauthorised";
 import StaffCitizens from "./pages/staff/StaffCitizens";
@@ -34,6 +35,7 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={["citizen"]} />}>
         <Route path="/citizen/verify-email" element={<CitizenEmailVerify />} />
         <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
+        <Route path="/citizen/profile" element={<CitizenProfile />} />
       </Route>
 
     </Routes>
