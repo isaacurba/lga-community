@@ -49,7 +49,7 @@ const StaffCitizens = () => {
               </Button>
               <h1 className="text-xl font-semibold">Citizen Management</h1>
             </div>
-            <Button onClick={() => navigate('/staff/register-citizen')} className="gap-2 shadow-sm">
+            <Button onClick={() => navigate('/staff/register-citizen')} className="gap-2 shadow-sm bg-black">
               <UserPlus className="h-4 w-4" />
               Register New Citizen
             </Button>
