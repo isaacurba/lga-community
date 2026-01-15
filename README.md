@@ -1,126 +1,193 @@
-# LGA Management System
+LGA Management System (MVP)
 
-A comprehensive full-stack application designed to digitize and streamline Local Government Area (LGA) operations. This system facilitates staff management, citizen registration, identity verification, and certificate issuance through a secure and modern web interface.
+A Minimum Viable Product (MVP) built to digitize citizen registration and record management at the Local Government Area (LGA) level.
 
-## 🚀 Project Overview
+The core goal of this project is simple:
 
-The application is built using the MERN stack (MongoDB, Express.js, React, Node.js) and is divided into two main components:
+Enable staff to register citizens and store their records securely, while allowing citizens to view and verify their information.
 
-*   **Frontend**: A responsive, interactive dashboard for staff and citizens.
-*   **Backend**: A robust REST API handling business logic, database operations, and authentication.
+This project intentionally supports Create & Read (CR) operations only.
 
-## ✨ Key Features
+🚀 Project Overview
 
-### 🔐 Security & Authentication
-*   **Staff Onboarding**: Secure registration flow with email OTP verification.
-*   **Authentication**: JWT-based session management.
-*   **RBAC**: Role-Based Access Control to separate Staff and Citizen privileges.
+The LGA Management System is a full-stack web application built with the MERN stack.
+It demonstrates real-world concepts such as authentication, role-based access, protected routes, and centralized data storage.
 
-### 🏛️ Administrative Dashboard
-*   **Analytics**: Real-time overview of registered citizens, issued certificates, and active staff.
-*   **Staff Management**: Tools for administrators to oversee workforce.
+The system supports two user roles:
 
-### 👥 Citizen Services
-*   **Digital Registry**: Centralized database for citizen records.
-*   **NIN Integration**: Search and verification using National Identity Numbers.
-*   **Certificate Issuance**: Automated generation of LGA certificates.
+Staff – registers citizens and manages records
 
-## 🛠️ Tech Stack
+Citizen – views personal records and verifies account
 
-### Backend (`/backend`)
-*   **Runtime**: Node.js
-*   **Framework**: Express.js
-*   **Database**: MongoDB
-*   **ODM**: Mongoose
+✅ MVP Scope (What This Project Does)
+🏛️ Staff Portal
 
-### Frontend (`/frontend`)
-*   **Framework**: React (Vite)
-*   **Styling**: Tailwind CSS
-*   **UI Library**: Shadcn UI
-*   **State Management**: Context API
-*   **HTTP Client**: Axios
+Staff authentication (login + email verification)
 
-## 📂 Repository Structure
+Register new citizens (CREATE)
 
-```text
+View registered citizens (READ)
+
+Search citizens by NIN or name
+
+View citizen verification status
+
+👥 Citizen Portal
+
+Citizen authentication (login)
+
+View personal registration details (READ)
+
+Email verification via OTP
+
+View account verification status
+
+❗ This MVP does not include Update or Delete operations.
+
+🔐 Authentication & Security
+
+JWT-based authentication
+
+HTTP-only cookies
+
+Role-Based Access Control (RBAC)
+
+OTP email verification for accounts
+
+🛠️ Tech Stack
+Backend (/backend)
+
+Node.js
+
+Express.js
+
+MongoDB
+
+Mongoose
+
+JWT
+
+Nodemailer
+
+Frontend (/frontend)
+
+React (Vite)
+
+Tailwind CSS
+
+Shadcn UI
+
+Context API
+
+Axios
+
+React Router
+
+📂 Project Structure
 LGA/
-├── backend/            # Server-side logic and API endpoints
-├── frontend/           # Client-side React application
-└── README.md           # Project documentation
-```
+├── backend/            # API, database models, authentication logic
+├── frontend/           # React dashboards (staff & citizen)
+└── README.md
 
-## ⚡ Getting Started
+⚡ Getting Started
+Prerequisites
 
-### Prerequisites
-*   Node.js (v16 or higher)
-*   npm or yarn
-*   MongoDB (Local instance or Atlas URI)
+Node.js (v16+)
 
-### Installation
+npm
 
-1.  **Clone the repository**
-    ```bash
-    git clone <repository-url>
-    cd LGA
-    ```
+MongoDB (Local or Atlas)
 
-### 1. Backend Setup
-
-Navigate to the backend directory to set up the server first.
-
-```bash
+🔧 Backend Setup
 cd backend
 npm install
-```
 
-Create a `.env` file in the `backend` directory with the following configuration:
 
-```env
+Create a .env file inside /backend:
+
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/lga_management
-JWT_SECRET=your_secure_jwt_secret_key
-```
+JWT_SECRET=your_jwt_secret
+
 
 Start the backend server:
 
-```bash
 npm start
-```
 
-### 2. Frontend Setup
-
-Open a new terminal window, navigate to the frontend directory, and install dependencies.
-
-```bash
-cd ../frontend
+🎨 Frontend Setup
+cd frontend
 npm install
-```
 
-Create a `.env` file in the `frontend` directory:
 
-```env
+Create a .env file inside /frontend:
+
 VITE_BACKEND_URL=http://localhost:5000
-```
 
-Start the React development server:
 
-```bash
+Start the frontend:
+
 npm run dev
-```
 
-The application should now be accessible at `http://localhost:5173`.
 
-## 🔗 API Integration
+Access the app at:
 
-The application communicates with a backend server via `axios`. The base URL is managed via the `AppContext`.
+http://localhost:5173
 
-*   **Auth Endpoints**: `/api/staff/auth/register`, `/api/staff/auth/login`, `/api/staff/auth/verify-account`
-*   **Citizen Endpoints**: `/api/staff/auth/register-citizen`
+🔗 API Endpoints (MVP)
+Staff
 
-## 🤝 Contributing
+POST /api/staff/auth/register
 
-1.  Fork the repository.
-2.  Create a feature branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
+POST /api/staff/auth/login
+
+POST /api/staff/auth/send-verify-otp
+
+POST /api/staff/register-citizen
+
+GET /api/staff/citizens
+
+Citizen
+
+POST /api/citizen/auth/login
+
+POST /api/citizen/auth/send-verify-otp
+
+GET /api/citizen/profile
+
+📌 Project Constraints
+
+No Update/Delete operations
+
+No certificate issuance in MVP
+
+Focus on data registration and visibility
+
+Realistic government system first phase
+
+🚧 Future Enhancements (Out of Scope)
+
+Certificate requests and issuance
+
+Admin role
+
+Full CRUD operations
+
+Audit logs
+
+Payments
+
+🧠 Summary
+
+This project demonstrates:
+
+Secure authentication
+
+Role separation
+
+Centralized citizen registry
+
+Clean and usable dashboards
+
+Real-world government use case
+
+It is intentionally minimal, complete, and defensible as an MVP.
