@@ -21,9 +21,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
-  // State for the Documentation Modal
-  const [showDoc, setShowDoc] = useState(false);
 
   const { backendUrl, setIsLoggedIn, setUserData } = useContext(AppContext);
 
@@ -97,20 +94,6 @@ const Login = () => {
             <CardTitle className="text-3xl font-bold tracking-tight">Welcome Back</CardTitle>
             <CardDescription className="text-base text-muted-foreground">Enter your credentials to access your portal</CardDescription>
           </div>
-
-          {/* Documentation Button */}
-          <div className="flex justify-center">
-             <Button 
-               variant="outline" 
-               size="sm" 
-               type="button" 
-               className="gap-2 text-xs h-8 rounded-full border-dashed text-muted-foreground hover:text-primary"
-               onClick={() => setShowDoc(true)}
-             >
-               <BookOpen className="w-3 h-3" />
-               Read Project Documentation
-             </Button>
-           </div>
         </CardHeader>
 
         <CardContent className="pt-6">
@@ -173,8 +156,6 @@ const Login = () => {
         </CardContent>
       </Card> 
 
-      {/* Render the Documentation Modal */}
-      <Documentation isOpen={showDoc} onClose={() => setShowDoc(false)} />
     </div>
   );
 };
