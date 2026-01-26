@@ -14,7 +14,6 @@ import { AppContext } from "@/context/AppContext";
 import axios from "axios";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
-import Documentation from "@/components/Documentation"; // Import the component
 
 const Login = () => {
   const navigate = useNavigate();
