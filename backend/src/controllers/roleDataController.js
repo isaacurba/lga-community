@@ -1,3 +1,4 @@
+
 import staffModel from "../models/staffModel.js";
 import citizenModel from "../models/citizenModel.js";
 

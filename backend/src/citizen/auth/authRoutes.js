@@ -1,6 +1,6 @@
 import express from "express";
 import { logout } from "../controllers/authController.js";
-import { genericAuth } from "../middleware/userAuth.js";
+import { genericAuth } from "../../middleware/userAuth.js";
 
 const router = express.Router();
 

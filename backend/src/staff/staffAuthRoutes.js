@@ -7,7 +7,7 @@ import {
   isAuthenticated,
   resetPassword,
   sendResetOtp,
-} from "../controllers/staffAuthController.js";
+} from "./staffAuthController.js";
 import { registerCitizen } from "../controllers/citizenAuthController.js";
 import { staffAuth } from "../middleware/userAuth.js";
 
