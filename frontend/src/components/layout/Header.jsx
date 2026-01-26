@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { AppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, Bell, User } from "lucide-react";
+import { LogOut, Bell, User, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ onMenuClick }) => {
   const { userData, logout } = useContext(AppContext);
   const navigate = useNavigate();
 
@@ -16,8 +16,15 @@ const Header = () => {
   return (
     <header className="flex h-14 items-center justify-between border-b bg-background px-4 lg:px-6">
       <div className="flex items-center gap-4">
-        {/* Mobile menu trigger could go here later */}
-        <h1 
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={onMenuClick}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <h1
           className="text-lg font-semibold md:text-xl cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => navigate(userData?.role === 'staff' ? '/staff/dashboard' : '/citizen/dashboard')}
         >
@@ -46,7 +53,7 @@ const Header = () => {
           </div>
         </div>
 
-        <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
+        <Button variant="ghost" size="icon" className="" onClick={handleLogout} title="Logout">
           <LogOut className="h-5 w-5 text-destructive" />
         </Button>
       </div>
