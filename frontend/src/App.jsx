@@ -7,7 +7,7 @@ import ResetPassword from './pages/auth/ResetPassword';
 import StaffRegister from "./pages/staff/StaffRegister";
 import StaffDashboard from "./pages/staff/StaffDashboard";
 import CitizenDashboard from "./pages/citizen/CitizenDashboard";
-import CitizenProfile from "./pages/citizen/citizenProfile";
+import CitizenProfile from "./pages/citizen/profile/CitizenProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorised from "./components/Unauthorised";
 import StaffCitizens from "./pages/staff/StaffCitizens";
