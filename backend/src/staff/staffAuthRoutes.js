@@ -8,7 +8,7 @@ import {
   resetPassword,
   sendResetOtp,
 } from "./staffAuthController.js";
-import { registerCitizen } from "../controllers/citizenAuthController.js";
+import { registerCitizen } from "../citizen/citizenAuthController.js";
 import { staffAuth } from "../middleware/userAuth.js";
 
 const authRouter = express.Router();
