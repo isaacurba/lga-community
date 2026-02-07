@@ -6,7 +6,7 @@ import {
   citizenResetOtp,
   citizenResetPassword,
   isAuthenticated
-} from "../controllers/citizenAuthController.js";
+} from "../citizen/citizenAuthController.js";
 import citizenAuth from "../middleware/userAuth.js";
 
 const citizenAuthRouter = express.Router();
