@@ -1,6 +1,7 @@
 
 import staffModel from "../models/staffModel.js";
 import citizenModel from "../models/citizenModel.js";
+import User from "../models/userModel.js";
 
 export const getStaffData = async (req, res) => {
   try {
@@ -11,9 +12,11 @@ export const getStaffData = async (req, res) => {
         message: "Missing userId",
       });
     }
-    const user = await staffModel.findById(userId);
+    // FIX: userId now refers to shared User; fetch staff profile by userId
+    const user = await User.findById(userId);
+    const staffProfile = await staffModel.findOne({ userId });
 
-    if (!user) {
+    if (!user || !staffProfile) {
       return res.json({
         success: false,
         message: "User not found",
@@ -22,9 +25,9 @@ export const getStaffData = async (req, res) => {
     res.json({
       success: true,  
       staffData: {
-        name: user.name,
+        name: staffProfile.name,
         isAccountVerified: user.isAccountVerified,
-        role: "staff",
+        role: user.role || "staff",
       },
     });
   } catch (error) {
@@ -61,9 +64,11 @@ export const getCitizenData = async (req, res) => {
         message: "Missing userId",
       });
     }
-    const user = await citizenModel.findById(userId);
+    // FIX: userId now refers to shared User; fetch citizen profile by userId
+    const user = await User.findById(userId);
+    const citizenProfile = await citizenModel.findOne({ userId });
 
-    if (!user) {
+    if (!user || !citizenProfile) {
       return res.json({
         success: false,
         message: "User not found",
@@ -72,11 +77,11 @@ export const getCitizenData = async (req, res) => {
     res.json({
       success: true,
       citizenData: {
-        ninId: user.ninId,
-        name: user.firstName,
-        lastName: user.lastName,
+        ninId: citizenProfile.ninId,
+        name: citizenProfile.firstName,
+        lastName: citizenProfile.lastName,
         isAccountVerified: user.isAccountVerified,
-        role: "citizen",
+        role: user.role || "citizen",
       },
     });
   } catch (error) {
