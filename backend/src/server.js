@@ -2,11 +2,12 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectedDB from "./config/db.js";
-import staffAuthRouter from "./staff/staffAuthRoutes.js";
+import staffAuthRouter from "./staff/routes/staffAuthRoutes.js";
 import cookieParser from "cookie-parser";
-import staffRouter from "./staff/staffRoutes.js";
-import citizenAuthRouter from "./citizen/citizenAuthRoutes.js";
-import citizenRouter from "./citizen/citizenRoutes.js";
+import staffRouter from "./staff/routes/staffRoutes.js";
+import citizenAuthRouter from "./citizen/routes/citizenAuthRoutes.js";
+import citizenRouter from "./citizen/routes/citizenDataRoutes.js";
+import authRouter from "./auth/routes/authRoutes.js";
 
 dotenv.config();
 
@@ -30,8 +31,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/staff/auth", staffAuthRouter);
 app.use("/api/citizen/auth", citizenAuthRouter);
-// Backward-compatible alias (if older clients still call /api/auth)
-app.use("/api/auth", staffAuthRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/staff", staffRouter);
 app.use("/api/citizen", citizenRouter);
 
