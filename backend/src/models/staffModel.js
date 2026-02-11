@@ -1,67 +1,26 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema(
+const staffSchema = new mongoose.Schema(
   {
+    // FIX: link staff profile to shared User auth record
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     name: {
       type: String,
       required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-      select: false,
-    },
-    role: {
-      type: String,
-      enum: ["staff", "admin"],
-      default: "staff",
-    },
-    verifyOtp: {
-      type: String,
-      default: "",
-    },
-    verifyOtpExpireAt: {
-      type: Number,
-      default: 0,
-    },
-    isAccountVerified: {
-      type: Boolean,
-      default: false,
-    },
-    resetOtp: {
-      type: String,
-      default: "",
-    },
-    resetOtpExpireAt: {
-      type: Number,
-      default: 0,
+      // FIX: normalize and constrain staff name length
+      trim: true,
+      minlength: 2,
+      maxlength: 100,
     },
   },
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    return next();
-  } catch (error) {
-    return next(error);
-  }
-});
-
-userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
-
-const Staff = mongoose.model("Staff", userSchema);
+const Staff = mongoose.model("Staff", staffSchema);
 
 export default Staff;
