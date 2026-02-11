@@ -1,24 +1,22 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 
 const citizenSchema = new mongoose.Schema(
   {
+    // FIX: link citizen profile to shared User auth record
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     ninId: {
       type: String,
       required: true,
       unique: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-    password: {
-      type: String,
-      required: true,
-      select: false,
+      // FIX: NIN must be exactly 11 digits (future NIMC API validation can be added at service layer)
+      minlength: 11,
+      maxlength: 11,
+      match: [/^\d{11}$/, "NIN must be exactly 11 digits"],
     },
     firstName: {
       type: String,
@@ -42,50 +40,10 @@ const citizenSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    role: {
-      type: String,
-      enum: ["citizen", "staff"],
-      default: "citizen",
-    },
-    isAccountVerified: {
-      type: Boolean,
-      default: false,
-    },
-    verifyOtp: {
-      type: String,
-      default: "",
-    },
-    verifyOtpExpireAt: {
-      type: Number,
-      default: 0,
-    },
-    sendResetOtp: {
-      type: String,
-      default: "",
-    },
-    resetOtpExpireAt: {
-      type: Date,
-      select: false,
-    },
+    // NOTE: auth fields moved to User model
   },
   { timestamps: true }
 );
-
-citizenSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    return next();
-  } catch (err) {
-    return next(err);
-  }
-});
-
-citizenSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
 
 const Citizen = mongoose.model("Citizen", citizenSchema);
 
