@@ -20,7 +20,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import useCitizens from '@/hooks/useCitizens';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import DashboardLayout from '@/layout/DashboardLayout';
 
 const StaffCitizens = () => {
   const navigate = useNavigate();

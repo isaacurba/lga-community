@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import { AppContext } from "@/context/AppContext";
-
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -39,25 +38,41 @@ const RegisterCitizen = () => {
     currentAddress: "",
   });
 
+  // Required fields for quick completeness feedback
+  const requiredFields = [
+    "firstName",
+    "lastName",
+    "ninId",
+    "email",
+    "password",
+    "originalLga",
+  ];
+  const filledRequired = requiredFields.filter((field) => formData[field]).length;
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // Keep NIN numeric and capped at 11 digits for a smoother UX
+    const nextValue =
+      name === "ninId" ? value.replace(/\D/g, "").slice(0, 11) : value;
     setFormData((prev) => ({
      ...prev, 
-     [name]: value 
+     [name]: nextValue 
     }));
+  };
+
+  const generatePassword = () => {
+    // Simple, readable password generator (can be upgraded later)
+    const chars =
+      "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+    let result = "";
+    for (let i = 0; i < 10; i += 1) {
+      result += chars[Math.floor(Math.random() * chars.length)];
+    }
+    setFormData((prev) => ({ ...prev, password: result }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const requiredFields = [
-      "firstName",
-      "lastName",
-      "ninId",
-      "email",
-      "password",
-      "originalLga",
-    ];
 
     const missing = requiredFields.some((field) => !formData[field]);
     if (missing) {
@@ -100,7 +115,12 @@ const RegisterCitizen = () => {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-semibold">Register Citizen</h1>
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-semibold">Register Citizen</h1>
+            <span className="text-xs text-muted-foreground">
+              Completion: {filledRequired}/{requiredFields.length}
+            </span>
+          </div>
         </div>
 
         <Card className="shadow-md border-t-4 border-t-primary">
@@ -153,7 +173,12 @@ const RegisterCitizen = () => {
                     placeholder="11-digit NIN"
                     value={formData.ninId}
                     onChange={handleChange}
+                    inputMode="numeric"
+                    maxLength={11}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    {formData.ninId.length}/11 digits
+                  </p>
                 </div>
               </section>
 
@@ -176,12 +201,22 @@ const RegisterCitizen = () => {
 
                   <div className="space-y-2">
                     <Label>Initial Password *</Label>
-                    <Input
-                      type="text"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={generatePassword}
+                        className="shrink-0"
+                      >
+                        Generate
+                      </Button>
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       Share this password securely with the citizen.
                     </p>
@@ -218,9 +253,10 @@ const RegisterCitizen = () => {
                           <CommandList>
                             <CommandEmpty>No LGA found.</CommandEmpty>
                             <CommandGroup>
-                              {nigeriaLGAs.map((lga) => (
+                              {nigeriaLGAs.map((lga, index) => (
                                 <CommandItem
-                                  key={lga}
+                                  // Some LGA names are repeated across different states; ensure key is unique
+                                  key={`${lga}-${index}`}
                                   value={lga}
                                   onSelect={(currentValue) => {
                                     setFormData((prev) => ({
@@ -264,6 +300,36 @@ const RegisterCitizen = () => {
                     value={formData.currentAddress}
                     onChange={handleChange}
                   />
+                </div>
+              </section>
+
+              {/* Live Summary */}
+              <section className="space-y-3 rounded-lg border bg-muted/30 p-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium">Live Summary</h4>
+                  <span className="text-xs text-muted-foreground">
+                    Updates as you type
+                  </span>
+                </div>
+                <div className="grid md:grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Name:</span>{" "}
+                    {formData.firstName || formData.lastName
+                      ? `${formData.firstName} ${formData.lastName}`.trim()
+                      : "—"}
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Email:</span>{" "}
+                    {formData.email || "—"}
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">NIN:</span>{" "}
+                    {formData.ninId || "—"}
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">LGA:</span>{" "}
+                    {formData.originalLga || "—"}
+                  </div>
                 </div>
               </section>
 
